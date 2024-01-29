@@ -8,7 +8,7 @@
     "build": "tsup src/main.ts",
     "start": "node dist/main",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest --env-file .env run --coverage"
   },
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.1.0",

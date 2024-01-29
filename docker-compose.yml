@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: branas-14
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./.docker/db:/var/lib/mysql
+
+  myadmin:
+    image: phpmyadmin:5.2
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      
