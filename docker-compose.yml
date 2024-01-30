@@ -3,8 +3,8 @@ services:
   db:
     image: mariadb:11
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: branas-14
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
     ports:
       - "3306:3306"
     volumes:
