@@ -3,41 +3,38 @@ import mysql from 'mysql2/promise'
 
 export function validateCpf(cpf: string) {
   if (!cpf) return false
-  cpf = cpf.replace(/\D/g, '')
-  if (cpf.length !== 11) return false
-  if (cpf.split('').every((c) => c === cpf[0])) return false
-  let d1 = 0
-  let d2 = 0
-  let dg1 = 0
-  let dg2 = 0
-  let rest = 0
-  let nDigResult = ''
-  for (let nCount = 1; nCount < cpf.length - 1; nCount++) {
-    const digito = parseInt(cpf.substring(nCount - 1, nCount))
-    d1 = d1 + (11 - nCount) * digito
-    d2 = d2 + (12 - nCount) * digito
-  }
-  rest = d1 % 11
-  dg1 = rest < 2 ? (dg1 = 0) : 11 - rest
-  d2 += 2 * dg1
-  rest = d2 % 11
-  if (rest < 2) dg2 = 0
-  else dg2 = 11 - rest
-  const nDigVerific = cpf.substring(cpf.length - 2, cpf.length)
-  // eslint-disable-next-line prefer-const
-  nDigResult = '' + dg1 + '' + dg2
-  // eslint-disable-next-line eqeqeq
-  return nDigVerific == nDigResult
+  cpf = clean(cpf)
+  if (!isValidLength(cpf)) return false
+  if (allDigitsAreEqual(cpf)) return false
+  const dg1 = calculateDigit(cpf, 10)
+  const dg2 = calculateDigit(cpf, 11)
+  return extractCheckDigit(cpf) === `${dg1}${dg2}`
 }
 
-function isValidName(name: string) {
-  return name.match(/[a-zA-Z] [a-zA-Z]+/)
+function clean(cpf: string) {
+  return cpf.replace(/\D/g, '')
 }
-function isValidEmail(email: string) {
-  return email.match(/^(.+)@(.+)$/)
+
+function isValidLength(cpf: string) {
+  return cpf.length === 11
 }
-function isValidCarPlate(carPlate: string) {
-  return carPlate.match(/[A-Z]{3}[0-9]{4}/)
+
+function allDigitsAreEqual(cpf: string) {
+  return cpf.split('').every((c) => c === cpf[0])
+}
+
+function calculateDigit(cpf: string, factor: number) {
+  let total = 0
+  for (const digit of cpf) {
+    if (factor < 2) break
+    total += Number(digit) * factor--
+  }
+  const rest = total % 11
+  return rest < 2 ? 0 : 11 - rest
+}
+
+function extractCheckDigit(cpf: string) {
+  return cpf.slice(9)
 }
 
 export async function signup(input: any): Promise<any> {
@@ -72,6 +69,16 @@ export async function signup(input: any): Promise<any> {
   } finally {
     connection.pool.end()
   }
+}
+
+function isValidName(name: string) {
+  return name.match(/[a-zA-Z] [a-zA-Z]+/)
+}
+function isValidEmail(email: string) {
+  return email.match(/^(.+)@(.+)$/)
+}
+function isValidCarPlate(carPlate: string) {
+  return carPlate.match(/[A-Z]{3}[0-9]{4}/)
 }
 
 export async function getAccount(accountId: string) {

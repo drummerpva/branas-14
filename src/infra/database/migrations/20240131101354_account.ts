@@ -11,6 +11,9 @@ export async function up(knex: Knex): Promise<void> {
       table.string('car_plate')
       table.boolean('is_passenger').notNullable().defaultTo(false)
       table.boolean('is_driver').notNullable().defaultTo(false)
+      table.string('password')
+      table.string('password_algorithm')
+      table.text('salt')
     },
   )
 }
