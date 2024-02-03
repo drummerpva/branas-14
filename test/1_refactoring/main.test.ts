@@ -50,7 +50,7 @@ test('Não deve criar uma conta se o nome for inválido', async () => {
     password: '123456',
   }
 
-  expect(() => signup(inputSignup)).rejects.toThrow('Invalid name')
+  await expect(() => signup(inputSignup)).rejects.toThrow('Invalid name')
 })
 
 test('Não deve criar uma conta se o email for inválido', async () => {
@@ -62,7 +62,7 @@ test('Não deve criar uma conta se o email for inválido', async () => {
     password: '123456',
   }
 
-  expect(() => signup(inputSignup)).rejects.toThrow('Invalid email')
+  await expect(() => signup(inputSignup)).rejects.toThrow('Invalid email')
 })
 
 test.each(['', '123', '11111111111', null, undefined])(
@@ -76,7 +76,7 @@ test.each(['', '123', '11111111111', null, undefined])(
       password: '123456',
     }
 
-    expect(() => signup(inputSignup)).rejects.toThrow('Invalid cpf')
+    await expect(() => signup(inputSignup)).rejects.toThrow('Invalid cpf')
   },
 )
 
@@ -89,7 +89,7 @@ test('Não deve criar uma conta se o email for duplicado', async () => {
     password: '123456',
   }
   await signup(inputSignup)
-  expect(() => signup(inputSignup)).rejects.toThrow('Duplicated account')
+  await expect(() => signup(inputSignup)).rejects.toThrow('Duplicated account')
 })
 
 test('Não deve criar uma conta se a placa for inválida', async () => {
@@ -101,5 +101,5 @@ test('Não deve criar uma conta se a placa for inválida', async () => {
     password: '123456',
     carPlate: '',
   }
-  expect(() => signup(inputSignup)).rejects.toThrow('Invalid car plate')
+  await expect(() => signup(inputSignup)).rejects.toThrow('Invalid car plate')
 })
