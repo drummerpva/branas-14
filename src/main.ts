@@ -1,27 +1,5 @@
 import crypto from 'node:crypto'
-import mysql from 'mysql2/promise'
-import express, { Request, Response } from 'express'
-const app = express()
-app.use(express.json())
-
-app.post('/signup', async (req: Request, res: Response) => {
-  try {
-    const input = req.body
-    const output = await signup(input)
-    res.json(output)
-  } catch (error: any) {
-    res.status(422).json({ message: error.message })
-  }
-})
-app.get('/accounts/:accountId', async (req: Request, res: Response) => {
-  const accountId = req.params.accountId
-  const output = await getAccount(accountId)
-  res.json(output)
-})
-
-app.listen(3000, () => {
-  console.log('Server is running at http://localhost:3000')
-})
+import { AccountDAO } from './AccountDAO'
 
 function validateCpf(cpf: string) {
   if (!cpf) return false
@@ -59,37 +37,19 @@ function extractCheckDigit(cpf: string) {
   return cpf.slice(9)
 }
 
-async function signup(input: any): Promise<any> {
-  const connection = mysql.createPool(String(process.env.DATABASE_URL))
-  try {
-    const accountId = crypto.randomUUID()
-    const [[account]] = (await connection.query(
-      'select * from account where email = ?',
-      [input.email],
-    )) as any[]
-    if (account) throw new Error('Duplicated account')
-    if (!isValidName(input.name)) throw new Error('Invalid name')
-    if (!isValidEmail(input.email)) throw new Error('Invalid email')
-    if (!validateCpf(input.cpf)) throw new Error('Invalid cpf')
-    if (input.isDriver && !isValidCarPlate(input.carPlate))
-      throw new Error('Invalid car plate')
-    await connection.query(
-      'insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)',
-      [
-        accountId,
-        input.name,
-        input.email,
-        input.cpf,
-        input.carPlate,
-        !!input.isPassenger,
-        !!input.isDriver,
-      ],
-    )
-    return {
-      accountId,
-    }
-  } finally {
-    connection.pool.end()
+export async function signup(input: any): Promise<any> {
+  const accountDAO = new AccountDAO()
+  input.accountId = crypto.randomUUID()
+  const account = await accountDAO.getByEmail(input.email)
+  if (account) throw new Error('Duplicated account')
+  if (!isValidName(input.name)) throw new Error('Invalid name')
+  if (!isValidEmail(input.email)) throw new Error('Invalid email')
+  if (!validateCpf(input.cpf)) throw new Error('Invalid cpf')
+  if (input.isDriver && !isValidCarPlate(input.carPlate))
+    throw new Error('Invalid car plate')
+  await accountDAO.save(input)
+  return {
+    accountId: input.accountId,
   }
 }
 
@@ -103,12 +63,8 @@ function isValidCarPlate(carPlate: string) {
   return carPlate.match(/[A-Z]{3}[0-9]{4}/)
 }
 
-async function getAccount(accountId: string) {
-  const connection = mysql.createPool(String(process.env.DATABASE_URL))
-  const [[account]] = (await connection.query(
-    'SELECT * FROM account WHERE account_id = ?',
-    [accountId],
-  )) as any[]
-  connection.pool.end()
+export async function getAccount(accountId: string) {
+  const accountDAO = new AccountDAO()
+  const account = await accountDAO.getById(accountId)
   return account
 }
