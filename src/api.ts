@@ -1,12 +1,14 @@
 import express, { Request, Response } from 'express'
-import { getAccount, signup } from './main'
+import { Signup } from './Signup'
+import { GetAccount } from './GetAccount'
 const app = express()
 app.use(express.json())
 
 app.post('/signup', async (req: Request, res: Response) => {
   try {
     const input = req.body
-    const output = await signup(input)
+    const signup = new Signup()
+    const output = await signup.execute(input)
     res.json(output)
   } catch (error: any) {
     res.status(422).json({ message: error.message })
@@ -14,7 +16,8 @@ app.post('/signup', async (req: Request, res: Response) => {
 })
 app.get('/accounts/:accountId', async (req: Request, res: Response) => {
   const accountId = req.params.accountId
-  const output = await getAccount(accountId)
+  const getAccount = new GetAccount()
+  const output = await getAccount.execute(accountId)
   res.json(output)
 })
 
