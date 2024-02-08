@@ -1,5 +1,6 @@
 module.exports = {
   extends: '@rocketseat/eslint-config/node',
+  plugins: ['simple-import-sort'],
   rules: {
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
