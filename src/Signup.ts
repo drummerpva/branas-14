@@ -1,11 +1,11 @@
 import crypto from 'node:crypto'
-import { AccountDAO } from './AccountDAO'
 import { validateCpf } from './CpfValidator'
 import { Logger } from './Logger'
+import { SignupAccountDAO } from './SignupAccountDAO'
 
 export class Signup {
   constructor(
-    private accountDAO: AccountDAO,
+    private accountDAO: SignupAccountDAO,
     private logger: Logger,
   ) {}
 

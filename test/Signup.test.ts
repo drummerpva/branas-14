@@ -3,19 +3,20 @@ import { GetAccount } from '../src/GetAccount'
 import { Signup } from '../src/Signup'
 import { Logger } from '../src/Logger'
 import { AccountDAODatabase } from '../src/AccountDAODatabase'
-import { AccountDAO } from '../src/AccountDAO'
 import { LoggerConsole } from '../src/LoggerConsole'
+import { SignupAccountDAO } from '../src/SignupAccountDAO'
+import { GetAccountAccountDAO } from '../src/GetAccountAccountDAO'
 
 let signup: Signup
 let getAccount: GetAccount
-let accountDAO: AccountDAO
+let AccountDAO: SignupAccountDAO & GetAccountAccountDAO
 let logger: Logger
 
 beforeEach(() => {
-  accountDAO = new AccountDAODatabase()
+  AccountDAO = new AccountDAODatabase()
   logger = new LoggerConsole()
-  signup = new Signup(accountDAO, logger)
-  getAccount = new GetAccount(accountDAO)
+  signup = new Signup(AccountDAO, logger)
+  getAccount = new GetAccount(AccountDAO)
 })
 
 test.each(['97456321558', '71428793860', '87748248800'])(
@@ -184,7 +185,7 @@ test.each(['97456321558', '71428793860', '87748248800'])(
       password: '123456',
     }
     const accounts: any[] = []
-    const accountDAOFake: AccountDAO = {
+    const accountDAOFake: SignupAccountDAO & GetAccountAccountDAO = {
       save: async (account: any) => {
         accounts.push(account)
       },

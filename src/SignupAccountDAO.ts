@@ -1,5 +1,4 @@
-export interface AccountDAO {
+export interface SignupAccountDAO {
   save(account: any): Promise<void>
-  getById(accountId: string): Promise<any>
   getByEmail(email: string): Promise<any>
 }
