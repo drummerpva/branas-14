@@ -183,10 +183,16 @@ test.each(['97456321558', '71428793860', '87748248800'])(
       isPassenger: true,
       password: '123456',
     }
+    const accounts: any[] = []
     const accountDAOFake: AccountDAO = {
-      save: async () => {},
-      getByEmail: async () => null,
-      getById: async () => inputSignup,
+      save: async (account: any) => {
+        accounts.push(account)
+      },
+      getById: async (accountId: string) => {
+        return accounts.find((account) => account.accountId === accountId)
+      },
+      getByEmail: async (email: string) =>
+        accounts.find((account) => account.email === email),
     }
     const loggerFake: Logger = {
       log: async () => {},
