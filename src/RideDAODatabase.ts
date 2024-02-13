@@ -28,4 +28,24 @@ export class RideDAODatabase implements RideDAO {
     connection.pool.end()
     return ride
   }
+
+  async listByPassengerId(passengerId: string): Promise<any[]> {
+    const connection = mysql.createPool(String(process.env.DATABASE_URL))
+    const [rides] = (await connection.query(
+      'SELECT * FROM ride WHERE passenger_id = ?',
+      [passengerId],
+    )) as any[]
+    connection.pool.end()
+    return rides
+  }
+
+  async getActiveRideByPassengerId(passengerId: string): Promise<any> {
+    const connection = mysql.createPool(String(process.env.DATABASE_URL))
+    const [[ride]] = (await connection.query(
+      `SELECT * FROM ride WHERE passenger_id = ? AND status IN (?) LIMIT 1`,
+      [passengerId, ['requested', 'accepted', 'in_progress']],
+    )) as any[]
+    connection.pool.end()
+    return ride
+  }
 }
