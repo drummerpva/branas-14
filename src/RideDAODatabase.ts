@@ -19,6 +19,15 @@ export class RideDAODatabase implements RideDAO {
     connection.pool.end()
   }
 
+  async update(ride: any): Promise<void> {
+    const connection = mysql.createPool(String(process.env.DATABASE_URL))
+    await connection.query(
+      `UPDATE ride SET status = ?, driver_id = ? WHERE ride_id = ?`,
+      [ride.status, ride.driverId ?? ride.driver_id, ride.ride_id],
+    )
+    connection.pool.end()
+  }
+
   async getById(rideId: string): Promise<any> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     const [[ride]] = (await connection.query(

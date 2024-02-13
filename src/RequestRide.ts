@@ -33,16 +33,4 @@ export class RequestRide {
       rideId: input.rideId,
     }
   }
-
-  isValidName(name: string) {
-    return name.match(/[a-zA-Z] [a-zA-Z]+/)
-  }
-
-  isValidEmail(email: string) {
-    return email.match(/^(.+)@(.+)$/)
-  }
-
-  isValidCarPlate(carPlate: string) {
-    return carPlate.match(/[A-Z]{3}[0-9]{4}/)
-  }
 }
