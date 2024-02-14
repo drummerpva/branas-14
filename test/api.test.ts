@@ -72,7 +72,7 @@ test('Não deve criar uma conta se o nome for inválido via API', async () => {
 test('Não deve criar uma conta se o email for inválido via API', async () => {
   const inputSignup = {
     name: 'John Doe',
-    email: `john.doe`,
+    email: `john.doe${Math.random()}`,
     cpf: '98765432100',
     isPassenger: true,
     password: '123456',

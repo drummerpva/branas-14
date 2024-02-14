@@ -1,10 +1,11 @@
 import mysql from 'mysql2/promise'
 import { SignupAccountDAO } from './SignupAccountDAO'
 import { GetAccountAccountDAO } from './GetAccountAccountDAO'
+import { Account } from './Account'
 export class AccountDAODatabase
   implements SignupAccountDAO, GetAccountAccountDAO
 {
-  async save(account: any): Promise<void> {
+  async save(account: Account): Promise<void> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     await connection.query(
       'insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)',
