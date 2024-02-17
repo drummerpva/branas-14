@@ -1,11 +1,11 @@
+import { AccountRepository } from './AccountRepository'
 import { Logger } from './Logger'
 import { RideDAO } from './RideDAO'
-import { AccountDAO } from './AccountDAO'
 
 export class StartRide {
   constructor(
     private rideDAO: RideDAO,
-    private accountDAO: AccountDAO,
+    private accountRepository: AccountRepository,
     private logger: Logger,
   ) {}
 

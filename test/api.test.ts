@@ -49,7 +49,7 @@ test('Deve criar uma conta para o motorista via API', async () => {
   expect(outputGetAccount.name).toBe(inputSignup.name)
   expect(outputGetAccount.email).toBe(inputSignup.email)
   expect(outputGetAccount.cpf).toBe(inputSignup.cpf)
-  expect(outputGetAccount.car_plate).toBe(inputSignup.carPlate)
+  expect(outputGetAccount.carPlate).toBe(inputSignup.carPlate)
 })
 
 test('Não deve criar uma conta se o nome for inválido via API', async () => {

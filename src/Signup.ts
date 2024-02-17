@@ -1,18 +1,18 @@
 import { Account } from './Account'
+import { AccountRepository } from './AccountRepository'
 import { Logger } from './Logger'
-import { SignupAccountDAO } from './SignupAccountDAO'
 
 export class Signup {
   constructor(
-    private accountDAO: SignupAccountDAO,
+    private accountRepository: AccountRepository,
     private logger: Logger,
   ) {}
 
   async execute(input: any): Promise<any> {
     this.logger.log(`Signup ${input.name}`)
-    const existingAccount = await this.accountDAO.getByEmail(input.email)
+    const existingAccount = await this.accountRepository.getByEmail(input.email)
     if (existingAccount) throw new Error('Duplicated account')
-    const account = new Account(
+    const account = Account.create(
       input.name,
       input.email,
       input.cpf,
@@ -20,7 +20,7 @@ export class Signup {
       input.isPassenger,
       input.isDriver,
     )
-    await this.accountDAO.save(account)
+    await this.accountRepository.save(account)
     return {
       accountId: account.accountId,
     }

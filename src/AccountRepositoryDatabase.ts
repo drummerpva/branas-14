@@ -1,10 +1,7 @@
 import mysql from 'mysql2/promise'
-import { SignupAccountDAO } from './SignupAccountDAO'
-import { GetAccountAccountDAO } from './GetAccountAccountDAO'
 import { Account } from './Account'
-export class AccountDAODatabase
-  implements SignupAccountDAO, GetAccountAccountDAO
-{
+import { AccountRepository } from './AccountRepository'
+export class AccountRepositoryDatabase implements AccountRepository {
   async save(account: Account): Promise<void> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     await connection.query(
@@ -22,23 +19,41 @@ export class AccountDAODatabase
     connection.pool.end()
   }
 
-  async getById(accountId: string): Promise<any> {
+  async getById(accountId: string): Promise<Account | undefined> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     const [[account]] = (await connection.query(
       'select * from account where account_id = ?',
       [accountId],
     )) as any[]
     connection.pool.end()
-    return account
+    if (!account) return
+    return Account.restore(
+      account.account_id,
+      account.name,
+      account.email,
+      account.cpf,
+      account.car_plate,
+      !!account.is_passenger,
+      !!account.is_driver,
+    )
   }
 
-  async getByEmail(email: string): Promise<any> {
+  async getByEmail(email: string): Promise<Account | undefined> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     const [[account]] = (await connection.query(
       'select * from account where email = ?',
       [email],
     )) as any[]
     connection.pool.end()
-    return account
+    if (!account) return
+    return Account.restore(
+      account.account_id,
+      account.name,
+      account.email,
+      account.cpf,
+      account.car_plate,
+      !!account.is_passenger,
+      !!account.is_driver,
+    )
   }
 }

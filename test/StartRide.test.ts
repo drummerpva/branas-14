@@ -1,17 +1,17 @@
 import { Signup } from '../src/Signup'
 import { Logger } from '../src/Logger'
-import { AccountDAODatabase } from '../src/AccountDAODatabase'
 import { LoggerConsole } from '../src/LoggerConsole'
 import { RequestRide } from '../src/RequestRide'
 import { RideDAO } from '../src/RideDAO'
 import { GetRide } from '../src/GetRide'
 import { RideDAODatabase } from '../src/RideDAODatabase'
-import { AccountDAO } from '../src/AccountDAO'
 import { AcceptRide } from '../src/AcceptRide'
 import { StartRide } from '../src/StartRide'
+import { AccountRepository } from '../src/AccountRepository'
+import { AccountRepositoryDatabase } from '../src/AccountRepositoryDatabase'
 
 let signup: Signup
-let accountDAO: AccountDAO
+let accountRepository: AccountRepository
 let logger: Logger
 let rideDAO: RideDAO
 let requestRide: RequestRide
@@ -20,14 +20,14 @@ let acceptRide: AcceptRide
 let startRide: StartRide
 
 beforeEach(() => {
-  accountDAO = new AccountDAODatabase()
+  accountRepository = new AccountRepositoryDatabase()
   logger = new LoggerConsole()
-  signup = new Signup(accountDAO, logger)
+  signup = new Signup(accountRepository, logger)
   rideDAO = new RideDAODatabase()
-  requestRide = new RequestRide(rideDAO, accountDAO, logger)
+  requestRide = new RequestRide(rideDAO, accountRepository, logger)
   getRide = new GetRide(rideDAO, logger)
-  acceptRide = new AcceptRide(rideDAO, accountDAO, logger)
-  startRide = new StartRide(rideDAO, accountDAO, logger)
+  acceptRide = new AcceptRide(rideDAO, accountRepository, logger)
+  startRide = new StartRide(rideDAO, accountRepository, logger)
 })
 
 test('Deve iniciar uma corrida', async () => {

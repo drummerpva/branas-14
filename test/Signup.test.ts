@@ -2,28 +2,30 @@ import sinon from 'sinon'
 import { GetAccount } from '../src/GetAccount'
 import { Signup } from '../src/Signup'
 import { Logger } from '../src/Logger'
-import { AccountDAODatabase } from '../src/AccountDAODatabase'
 import { LoggerConsole } from '../src/LoggerConsole'
-import { SignupAccountDAO } from '../src/SignupAccountDAO'
-import { GetAccountAccountDAO } from '../src/GetAccountAccountDAO'
+import { AccountRepositoryDatabase } from '../src/AccountRepositoryDatabase'
+import { AccountRepository } from '../src/AccountRepository'
+import { Account } from '../src/Account'
 
 let signup: Signup
 let getAccount: GetAccount
-let AccountDAO: SignupAccountDAO & GetAccountAccountDAO
+let accountRepository: AccountRepository
 let logger: Logger
 
 beforeEach(() => {
-  AccountDAO = new AccountDAODatabase()
+  accountRepository = new AccountRepositoryDatabase()
   logger = new LoggerConsole()
-  signup = new Signup(AccountDAO, logger)
-  getAccount = new GetAccount(AccountDAO)
+  signup = new Signup(accountRepository, logger)
+  getAccount = new GetAccount(accountRepository)
 })
 
 test.each(['97456321558', '71428793860', '87748248800'])(
   'Deve criar uma conta para o passageiro (STUB)',
   async function (cpf: string) {
-    sinon.stub(AccountDAODatabase.prototype, 'save').resolves()
-    sinon.stub(AccountDAODatabase.prototype, 'getByEmail').resolves(null)
+    sinon.stub(AccountRepositoryDatabase.prototype, 'save').resolves()
+    sinon
+      .stub(AccountRepositoryDatabase.prototype, 'getByEmail')
+      .resolves(undefined)
     // given
     const inputSignup = {
       name: 'John Doe',
@@ -35,11 +37,21 @@ test.each(['97456321558', '71428793860', '87748248800'])(
     // when
     const outputSignup = await signup.execute(inputSignup)
     expect(outputSignup.accountId).toBeDefined()
-    sinon.stub(AccountDAODatabase.prototype, 'getById').resolves(inputSignup)
+    const returnAccont = Account.create(
+      inputSignup.name,
+      inputSignup.email,
+      inputSignup.cpf,
+      '',
+      inputSignup.isPassenger,
+      false,
+    )
+    sinon
+      .stub(AccountRepositoryDatabase.prototype, 'getById')
+      .resolves(returnAccont)
     const outputGetAccount = await getAccount.execute(outputSignup.accountId)
     // then
-    expect(outputGetAccount.name).toBe(inputSignup.name)
-    expect(outputGetAccount.email).toBe(inputSignup.email)
+    expect(outputGetAccount?.name).toBe(inputSignup.name)
+    expect(outputGetAccount?.email).toBe(inputSignup.email)
 
     sinon.restore()
   },
@@ -62,8 +74,8 @@ test.each(['97456321558', '71428793860', '87748248800'])(
     expect(outputSignup.accountId).toBeDefined()
     const outputGetAccount = await getAccount.execute(outputSignup.accountId)
     // then
-    expect(outputGetAccount.name).toBe(inputSignup.name)
-    expect(outputGetAccount.email).toBe(inputSignup.email)
+    expect(outputGetAccount?.name).toBe(inputSignup.name)
+    expect(outputGetAccount?.email).toBe(inputSignup.email)
     mockLogger.verify()
 
     sinon.restore()
@@ -151,8 +163,8 @@ test('Deve criar uma conta para o motorista (SPY)', async function () {
   const outputGetAccount = await getAccount.execute(outputSignup.accountId)
   // then
   expect(outputSignup.accountId).toBeDefined()
-  expect(outputGetAccount.name).toBe(inputSignup.name)
-  expect(outputGetAccount.email).toBe(inputSignup.email)
+  expect(outputGetAccount?.name).toBe(inputSignup.name)
+  expect(outputGetAccount?.email).toBe(inputSignup.email)
   expect(loggerSpy.calledOnce).toBe(true)
   expect(loggerSpy.calledWith(`Signup ${inputSignup.name}`)).toBe(true)
   sinon.restore()
@@ -185,7 +197,7 @@ test.each(['97456321558', '71428793860', '87748248800'])(
       password: '123456',
     }
     const accounts: any[] = []
-    const accountDAOFake: SignupAccountDAO & GetAccountAccountDAO = {
+    const accountRepositoryFake: AccountRepository = {
       save: async (account: any) => {
         accounts.push(account)
       },
@@ -198,13 +210,13 @@ test.each(['97456321558', '71428793860', '87748248800'])(
     const loggerFake: Logger = {
       log: async () => {},
     }
-    const signup = new Signup(accountDAOFake, loggerFake)
-    const getAccount = new GetAccount(accountDAOFake)
+    const signup = new Signup(accountRepositoryFake, loggerFake)
+    const getAccount = new GetAccount(accountRepositoryFake)
 
     const outputSignup = await signup.execute(inputSignup)
     expect(outputSignup.accountId).toBeDefined()
     const outputGetAccount = await getAccount.execute(outputSignup.accountId)
-    expect(outputGetAccount.name).toBe(inputSignup.name)
-    expect(outputGetAccount.email).toBe(inputSignup.email)
+    expect(outputGetAccount?.name).toBe(inputSignup.name)
+    expect(outputGetAccount?.email).toBe(inputSignup.email)
   },
 )

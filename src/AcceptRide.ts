@@ -1,18 +1,18 @@
+import { AccountRepository } from './AccountRepository'
 import { Logger } from './Logger'
 import { RideDAO } from './RideDAO'
-import { AccountDAO } from './AccountDAO'
 
 export class AcceptRide {
   constructor(
     private rideDAO: RideDAO,
-    private accountDAO: AccountDAO,
+    private accountRepository: AccountRepository,
     private logger: Logger,
   ) {}
 
   async execute(input: any): Promise<any> {
     this.logger.log(`AcceptRide`)
-    const account = await this.accountDAO.getById(input.driverId)
-    if (!account.is_driver) {
+    const account = await this.accountRepository.getById(input.driverId)
+    if (!account?.isDriver) {
       throw new Error('Only drivers can accept ride')
     }
     const ride = await this.rideDAO.getById(input.rideId)

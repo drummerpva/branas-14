@@ -1,16 +1,16 @@
 import { Signup } from '../src/Signup'
 import { Logger } from '../src/Logger'
-import { AccountDAODatabase } from '../src/AccountDAODatabase'
 import { LoggerConsole } from '../src/LoggerConsole'
 import { RequestRide } from '../src/RequestRide'
 import { RideDAO } from '../src/RideDAO'
 import { GetRide } from '../src/GetRide'
 import { RideDAODatabase } from '../src/RideDAODatabase'
-import { AccountDAO } from '../src/AccountDAO'
 import { AcceptRide } from '../src/AcceptRide'
+import { AccountRepository } from '../src/AccountRepository'
+import { AccountRepositoryDatabase } from '../src/AccountRepositoryDatabase'
 
 let signup: Signup
-let accountDAO: AccountDAO
+let accountDAO: AccountRepository
 let logger: Logger
 let rideDAO: RideDAO
 let requestRide: RequestRide
@@ -18,7 +18,7 @@ let getRide: GetRide
 let acceptRide: AcceptRide
 
 beforeEach(() => {
-  accountDAO = new AccountDAODatabase()
+  accountDAO = new AccountRepositoryDatabase()
   logger = new LoggerConsole()
   signup = new Signup(accountDAO, logger)
   rideDAO = new RideDAODatabase()
