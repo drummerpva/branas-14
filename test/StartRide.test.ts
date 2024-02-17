@@ -2,18 +2,18 @@ import { Signup } from '../src/Signup'
 import { Logger } from '../src/Logger'
 import { LoggerConsole } from '../src/LoggerConsole'
 import { RequestRide } from '../src/RequestRide'
-import { RideDAO } from '../src/RideDAO'
 import { GetRide } from '../src/GetRide'
-import { RideDAODatabase } from '../src/RideDAODatabase'
 import { AcceptRide } from '../src/AcceptRide'
 import { StartRide } from '../src/StartRide'
 import { AccountRepository } from '../src/AccountRepository'
 import { AccountRepositoryDatabase } from '../src/AccountRepositoryDatabase'
+import { RideRepository } from '../src/RideRepository'
+import { RideRepositoryDatabase } from '../src/RideRepositoryDatabase'
 
 let signup: Signup
 let accountRepository: AccountRepository
 let logger: Logger
-let rideDAO: RideDAO
+let rideRepository: RideRepository
 let requestRide: RequestRide
 let getRide: GetRide
 let acceptRide: AcceptRide
@@ -23,11 +23,11 @@ beforeEach(() => {
   accountRepository = new AccountRepositoryDatabase()
   logger = new LoggerConsole()
   signup = new Signup(accountRepository, logger)
-  rideDAO = new RideDAODatabase()
-  requestRide = new RequestRide(rideDAO, accountRepository, logger)
-  getRide = new GetRide(rideDAO, logger)
-  acceptRide = new AcceptRide(rideDAO, accountRepository, logger)
-  startRide = new StartRide(rideDAO, accountRepository, logger)
+  rideRepository = new RideRepositoryDatabase()
+  requestRide = new RequestRide(rideRepository, accountRepository, logger)
+  getRide = new GetRide(rideRepository, logger)
+  acceptRide = new AcceptRide(rideRepository, accountRepository, logger)
+  startRide = new StartRide(rideRepository, accountRepository, logger)
 })
 
 test('Deve iniciar uma corrida', async () => {
@@ -67,5 +67,5 @@ test('Deve iniciar uma corrida', async () => {
   await startRide.execute(inputStartRide)
   const outputGetRide = await getRide.execute(outputRequestRide.rideId)
   expect(outputGetRide.status).toBe('in_progress')
-  expect(outputGetRide.driver_id).toBe(outputSignupDriver.accountId)
+  expect(outputGetRide.driverId).toBe(outputSignupDriver.accountId)
 })

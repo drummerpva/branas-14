@@ -9,9 +9,9 @@ app.use(express.json())
 app.post('/signup', async (req: Request, res: Response) => {
   try {
     const input = req.body
-    const accountDAO = new AccountRepositoryDatabase()
+    const accountRepository = new AccountRepositoryDatabase()
     const logger = new LoggerConsole()
-    const signup = new Signup(accountDAO, logger)
+    const signup = new Signup(accountRepository, logger)
     const output = await signup.execute(input)
     res.json(output)
   } catch (error: any) {
@@ -20,8 +20,8 @@ app.post('/signup', async (req: Request, res: Response) => {
 })
 app.get('/accounts/:accountId', async (req: Request, res: Response) => {
   const accountId = req.params.accountId
-  const accountDAO = new AccountRepositoryDatabase()
-  const getAccount = new GetAccount(accountDAO)
+  const accountRepository = new AccountRepositoryDatabase()
+  const getAccount = new GetAccount(accountRepository)
   const output = await getAccount.execute(accountId)
   res.json(output)
 })

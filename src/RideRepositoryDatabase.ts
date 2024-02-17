@@ -1,7 +1,8 @@
-import { RideDAO } from './RideDAO'
 import mysql from 'mysql2/promise'
-export class RideDAODatabase implements RideDAO {
-  async save(ride: any): Promise<void> {
+import { RideRepository } from './RideRepository'
+import { Ride } from './Ride'
+export class RideRepositoryDatabase implements RideRepository {
+  async save(ride: Ride): Promise<void> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     await connection.query(
       'INSERT INTO ride(ride_id, passenger_id, from_lat, from_long, to_lat, to_long, status, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -19,23 +20,34 @@ export class RideDAODatabase implements RideDAO {
     connection.pool.end()
   }
 
-  async update(ride: any): Promise<void> {
+  async update(ride: Ride): Promise<void> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     await connection.query(
       `UPDATE ride SET status = ?, driver_id = ? WHERE ride_id = ?`,
-      [ride.status, ride.driverId ?? ride.driver_id, ride.ride_id],
+      [ride.status, ride.driverId, ride.rideId],
     )
     connection.pool.end()
   }
 
-  async getById(rideId: string): Promise<any> {
+  async getById(rideId: string): Promise<Ride | undefined> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     const [[ride]] = (await connection.query(
       'SELECT * FROM ride WHERE ride_id = ?',
       [rideId],
     )) as any[]
     connection.pool.end()
-    return ride
+    if (!ride) return
+    return new Ride(
+      ride.ride_id,
+      ride.passenger_id,
+      ride.driver_id,
+      ride.status,
+      ride.date,
+      ride.from_lat,
+      ride.from_long,
+      ride.to_lat,
+      ride.to_long,
+    )
   }
 
   async listByPassengerId(passengerId: string): Promise<any[]> {
@@ -45,7 +57,20 @@ export class RideDAODatabase implements RideDAO {
       [passengerId],
     )) as any[]
     connection.pool.end()
-    return rides
+    return rides.map(
+      (rideData: any) =>
+        new Ride(
+          rideData.ride_id,
+          rideData.passenger_id,
+          rideData.driver_id,
+          rideData.status,
+          rideData.date,
+          rideData.from_lat,
+          rideData.from_long,
+          rideData.to_lat,
+          rideData.to_long,
+        ),
+    )
   }
 
   async getActiveRideByPassengerId(passengerId: string): Promise<any> {
@@ -55,6 +80,17 @@ export class RideDAODatabase implements RideDAO {
       [passengerId, ['requested', 'accepted', 'in_progress']],
     )) as any[]
     connection.pool.end()
-    return ride
+    if (!ride) return
+    return new Ride(
+      ride.ride_id,
+      ride.passenger_id,
+      ride.driver_id,
+      ride.status,
+      ride.date,
+      ride.from_lat,
+      ride.from_long,
+      ride.to_lat,
+      ride.to_long,
+    )
   }
 }
