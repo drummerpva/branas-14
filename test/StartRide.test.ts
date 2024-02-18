@@ -9,6 +9,8 @@ import { AccountRepository } from '../src/AccountRepository'
 import { AccountRepositoryDatabase } from '../src/AccountRepositoryDatabase'
 import { RideRepository } from '../src/RideRepository'
 import { RideRepositoryDatabase } from '../src/RideRepositoryDatabase'
+import { DatabaseConnection } from '../src/DatabaseConnection'
+import { MysqlAdapter } from '../src/MysqlAdapter'
 
 let signup: Signup
 let accountRepository: AccountRepository
@@ -18,16 +20,21 @@ let requestRide: RequestRide
 let getRide: GetRide
 let acceptRide: AcceptRide
 let startRide: StartRide
+let databaseConnection: DatabaseConnection
 
 beforeEach(() => {
-  accountRepository = new AccountRepositoryDatabase()
+  databaseConnection = new MysqlAdapter()
+  accountRepository = new AccountRepositoryDatabase(databaseConnection)
   logger = new LoggerConsole()
   signup = new Signup(accountRepository, logger)
-  rideRepository = new RideRepositoryDatabase()
+  rideRepository = new RideRepositoryDatabase(databaseConnection)
   requestRide = new RequestRide(rideRepository, accountRepository, logger)
   getRide = new GetRide(rideRepository, logger)
   acceptRide = new AcceptRide(rideRepository, accountRepository, logger)
   startRide = new StartRide(rideRepository, accountRepository, logger)
+})
+afterEach(async () => {
+  await databaseConnection.close()
 })
 
 test('Deve iniciar uma corrida', async () => {

@@ -3,16 +3,19 @@ import { Signup } from './Signup'
 import { GetAccount } from './GetAccount'
 import { LoggerConsole } from './LoggerConsole'
 import { AccountRepositoryDatabase } from './AccountRepositoryDatabase'
+import { MysqlAdapter } from './MysqlAdapter'
 const app = express()
 app.use(express.json())
 
 app.post('/signup', async (req: Request, res: Response) => {
   try {
     const input = req.body
-    const accountRepository = new AccountRepositoryDatabase()
+    const databaseConnection = new MysqlAdapter()
+    const accountRepository = new AccountRepositoryDatabase(databaseConnection)
     const logger = new LoggerConsole()
     const signup = new Signup(accountRepository, logger)
     const output = await signup.execute(input)
+    await databaseConnection.close()
     res.json(output)
   } catch (error: any) {
     res.status(422).json({ message: error.message })
@@ -20,9 +23,11 @@ app.post('/signup', async (req: Request, res: Response) => {
 })
 app.get('/accounts/:accountId', async (req: Request, res: Response) => {
   const accountId = req.params.accountId
-  const accountRepository = new AccountRepositoryDatabase()
+  const databaseConnection = new MysqlAdapter()
+  const accountRepository = new AccountRepositoryDatabase(databaseConnection)
   const getAccount = new GetAccount(accountRepository)
   const output = await getAccount.execute(accountId)
+  await databaseConnection.close()
   res.json(output)
 })
 

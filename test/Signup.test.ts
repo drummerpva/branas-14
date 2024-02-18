@@ -6,17 +6,24 @@ import { LoggerConsole } from '../src/LoggerConsole'
 import { AccountRepositoryDatabase } from '../src/AccountRepositoryDatabase'
 import { AccountRepository } from '../src/AccountRepository'
 import { Account } from '../src/Account'
+import { DatabaseConnection } from '../src/DatabaseConnection'
+import { MysqlAdapter } from '../src/MysqlAdapter'
 
 let signup: Signup
 let getAccount: GetAccount
 let accountRepository: AccountRepository
 let logger: Logger
+let databaseConnection: DatabaseConnection
 
 beforeEach(() => {
-  accountRepository = new AccountRepositoryDatabase()
+  databaseConnection = new MysqlAdapter()
+  accountRepository = new AccountRepositoryDatabase(databaseConnection)
   logger = new LoggerConsole()
   signup = new Signup(accountRepository, logger)
   getAccount = new GetAccount(accountRepository)
+})
+afterEach(async () => {
+  await databaseConnection.close()
 })
 
 test.each(['97456321558', '71428793860', '87748248800'])(

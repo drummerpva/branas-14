@@ -1,10 +1,11 @@
-import mysql from 'mysql2/promise'
 import { Account } from './Account'
 import { AccountRepository } from './AccountRepository'
+import { DatabaseConnection } from './DatabaseConnection'
 export class AccountRepositoryDatabase implements AccountRepository {
+  constructor(readonly databaseConnection: DatabaseConnection) {}
+
   async save(account: Account): Promise<void> {
-    const connection = mysql.createPool(String(process.env.DATABASE_URL))
-    await connection.query(
+    await this.databaseConnection.query(
       'insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)',
       [
         account.accountId,
@@ -16,16 +17,13 @@ export class AccountRepositoryDatabase implements AccountRepository {
         !!account.isDriver,
       ],
     )
-    connection.pool.end()
   }
 
   async getById(accountId: string): Promise<Account | undefined> {
-    const connection = mysql.createPool(String(process.env.DATABASE_URL))
-    const [[account]] = (await connection.query(
+    const [account] = await this.databaseConnection.query(
       'select * from account where account_id = ?',
       [accountId],
-    )) as any[]
-    connection.pool.end()
+    )
     if (!account) return
     return Account.restore(
       account.account_id,
@@ -39,12 +37,10 @@ export class AccountRepositoryDatabase implements AccountRepository {
   }
 
   async getByEmail(email: string): Promise<Account | undefined> {
-    const connection = mysql.createPool(String(process.env.DATABASE_URL))
-    const [[account]] = (await connection.query(
+    const [account] = await this.databaseConnection.query(
       'select * from account where email = ?',
       [email],
-    )) as any[]
-    connection.pool.end()
+    )
     if (!account) return
     return Account.restore(
       account.account_id,
