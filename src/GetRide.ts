@@ -7,9 +7,24 @@ export class GetRide {
     private logger: Logger,
   ) {}
 
-  async execute(rideId: string): Promise<any> {
+  async execute(rideId: string): Promise<Output> {
     this.logger.log(`GetRide`)
     const ride = await this.rideRepository.getById(rideId)
-    return ride
+    if (!ride) throw new Error('Ride not found')
+    return {
+      rideId: ride.rideId,
+      status: ride.getStatus(),
+      driverId: ride.getDriverId(),
+      passengerId: ride.passengerId,
+      date: ride.date,
+    }
   }
+}
+
+type Output = {
+  rideId: string
+  status: string
+  driverId: string
+  passengerId: string
+  date: Date
 }

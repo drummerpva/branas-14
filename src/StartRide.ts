@@ -15,7 +15,7 @@ export class StartRide {
     if (!ride) {
       throw new Error('Ride does not exist')
     }
-    ride.status = 'in_progress'
+    ride.start()
     await this.rideRepository.update(ride)
   }
 }

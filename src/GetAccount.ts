@@ -5,6 +5,7 @@ export class GetAccount {
 
   async execute(accountId: string) {
     const account = await this.accountRepository.getById(accountId)
+    if (!account) throw new Error('Account not found')
     return account
   }
 }

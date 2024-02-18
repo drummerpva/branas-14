@@ -10,21 +10,16 @@ export class RequestRide {
     private logger: Logger,
   ) {}
 
-  async execute(input: any): Promise<any> {
+  async execute(input: Input): Promise<Output> {
     this.logger.log(`RequestRide`)
     const account = await this.accountRepository.getById(input.passengerId)
-    if (!account) {
-      throw new Error('Account does not exist')
-    }
-    if (!account.isPassenger) {
+    if (!account) throw new Error('Account does not exist')
+    if (!account.isPassenger)
       throw new Error('Only passenger can request a ride')
-    }
     const activeRide = await this.rideRepository.getActiveRideByPassengerId(
       input.passengerId,
     )
-    if (activeRide) {
-      throw new Error('Passenger has an active ride')
-    }
+    if (activeRide) throw new Error('Passenger has an active ride')
     const ride = Ride.create(
       input.passengerId,
       input.fromLat,
@@ -37,4 +32,15 @@ export class RequestRide {
       rideId: ride.rideId,
     }
   }
+}
+
+type Input = {
+  passengerId: string
+  fromLat: number
+  fromLong: number
+  toLat: number
+  toLong: number
+}
+type Output = {
+  rideId: string
 }

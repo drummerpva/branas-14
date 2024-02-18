@@ -13,7 +13,7 @@ export class RideRepositoryDatabase implements RideRepository {
         ride.fromLong,
         ride.toLat,
         ride.toLong,
-        ride.status,
+        ride.getStatus(),
         ride.date,
       ],
     )
@@ -24,7 +24,7 @@ export class RideRepositoryDatabase implements RideRepository {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     await connection.query(
       `UPDATE ride SET status = ?, driver_id = ? WHERE ride_id = ?`,
-      [ride.status, ride.driverId, ride.rideId],
+      [ride.getStatus(), ride.getDriverId(), ride.rideId],
     )
     connection.pool.end()
   }
@@ -43,14 +43,14 @@ export class RideRepositoryDatabase implements RideRepository {
       ride.driver_id,
       ride.status,
       ride.date,
-      ride.from_lat,
-      ride.from_long,
-      ride.to_lat,
-      ride.to_long,
+      Number(ride.from_lat),
+      Number(ride.from_long),
+      Number(ride.to_lat),
+      Number(ride.to_long),
     )
   }
 
-  async listByPassengerId(passengerId: string): Promise<any[]> {
+  async listByPassengerId(passengerId: string): Promise<Ride[]> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     const [rides] = (await connection.query(
       'SELECT * FROM ride WHERE passenger_id = ?',
@@ -65,15 +65,17 @@ export class RideRepositoryDatabase implements RideRepository {
           rideData.driver_id,
           rideData.status,
           rideData.date,
-          rideData.from_lat,
-          rideData.from_long,
-          rideData.to_lat,
-          rideData.to_long,
+          Number(rideData.from_lat),
+          Number(rideData.from_long),
+          Number(rideData.to_lat),
+          Number(rideData.to_long),
         ),
     )
   }
 
-  async getActiveRideByPassengerId(passengerId: string): Promise<any> {
+  async getActiveRideByPassengerId(
+    passengerId: string,
+  ): Promise<Ride | undefined> {
     const connection = mysql.createPool(String(process.env.DATABASE_URL))
     const [[ride]] = (await connection.query(
       `SELECT * FROM ride WHERE passenger_id = ? AND status IN (?) LIMIT 1`,
@@ -87,10 +89,10 @@ export class RideRepositoryDatabase implements RideRepository {
       ride.driver_id,
       ride.status,
       ride.date,
-      ride.from_lat,
-      ride.from_long,
-      ride.to_lat,
-      ride.to_long,
+      Number(ride.from_lat),
+      Number(ride.from_long),
+      Number(ride.to_lat),
+      Number(ride.to_long),
     )
   }
 }
