@@ -1,4 +1,4 @@
-import { validateCpf } from '../src/domain/CpfValidator'
+import { validateCpf } from '../../src/domain/CpfValidator'
 
 test.each(['97456321558', '71428793860', '87748248800'])(
   'Deve testar CPFs válidos',
