@@ -1,10 +1,10 @@
-import { AccountRepositoryDatabase } from './AccountRepositoryDatabase'
-import { ExpressAdapter } from './ExpressAdapter'
-import { GetAccount } from './GetAccount'
-import { LoggerConsole } from './LoggerConsole'
-import { MainController } from './MainController'
-import { MysqlAdapter } from './MysqlAdapter'
-import { Signup } from './Signup'
+import { AccountRepositoryDatabase } from './infra/repositories/AccountRepositoryDatabase'
+import { ExpressAdapter } from './infra/http/ExpressAdapter'
+import { GetAccount } from './application/usecases/GetAccount'
+import { LoggerConsole } from './infra/gateway/LoggerConsole'
+import { MainController } from './infra/controller/MainController'
+import { MysqlAdapter } from './infra/database/MysqlAdapter'
+import { Signup } from './application/usecases/Signup'
 
 const databaseConnection = new MysqlAdapter()
 const httpServer = new ExpressAdapter()

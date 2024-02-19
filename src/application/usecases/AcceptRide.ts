@@ -1,6 +1,6 @@
-import { AccountRepository } from './AccountRepository'
-import { Logger } from './Logger'
-import { RideRepository } from './RideRepository'
+import { AccountRepository } from '../repositories/AccountRepository'
+import { Logger } from '../gateway/Logger'
+import { RideRepository } from '../repositories/RideRepository'
 
 export class AcceptRide {
   constructor(

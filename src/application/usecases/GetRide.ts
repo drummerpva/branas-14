@@ -1,5 +1,5 @@
-import { Logger } from './Logger'
-import { RideRepository } from './RideRepository'
+import { Logger } from '../gateway/Logger'
+import { RideRepository } from '../repositories/RideRepository'
 
 export class GetRide {
   constructor(

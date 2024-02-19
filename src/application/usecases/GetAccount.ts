@@ -1,4 +1,4 @@
-import { AccountRepository } from './AccountRepository'
+import { AccountRepository } from '../repositories/AccountRepository'
 
 export class GetAccount {
   constructor(private accountRepository: AccountRepository) {}

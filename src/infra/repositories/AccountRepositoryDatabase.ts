@@ -1,6 +1,6 @@
-import { Account } from './Account'
-import { AccountRepository } from './AccountRepository'
-import { DatabaseConnection } from './DatabaseConnection'
+import { Account } from '../../domain/Account'
+import { AccountRepository } from '../../application/repositories/AccountRepository'
+import { DatabaseConnection } from '../database/DatabaseConnection'
 export class AccountRepositoryDatabase implements AccountRepository {
   constructor(readonly databaseConnection: DatabaseConnection) {}
 

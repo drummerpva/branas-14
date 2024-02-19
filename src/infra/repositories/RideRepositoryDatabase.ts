@@ -1,6 +1,6 @@
-import { RideRepository } from './RideRepository'
-import { Ride } from './Ride'
-import { DatabaseConnection } from './DatabaseConnection'
+import { RideRepository } from '../../application/repositories/RideRepository'
+import { Ride } from '../../domain/Ride'
+import { DatabaseConnection } from '../database/DatabaseConnection'
 export class RideRepositoryDatabase implements RideRepository {
   constructor(readonly databaseConnection: DatabaseConnection) {}
 
