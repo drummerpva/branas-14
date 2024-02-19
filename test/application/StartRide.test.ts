@@ -1,6 +1,5 @@
 import { Signup } from '../../src/application/usecases/Signup'
-import { Logger } from '../../src/application/gateway/Logger'
-import { LoggerConsole } from '../../src/infra/gateway/LoggerConsole'
+import { LoggerConsole } from '../../src/infra/logger/LoggerConsole'
 import { RequestRide } from '../../src/application/usecases/RequestRide'
 import { GetRide } from '../../src/application/usecases/GetRide'
 import { AcceptRide } from '../../src/application/usecases/AcceptRide'
@@ -11,6 +10,7 @@ import { RideRepository } from '../../src/application/repositories/RideRepositor
 import { RideRepositoryDatabase } from '../../src/infra/repositories/RideRepositoryDatabase'
 import { DatabaseConnection } from '../../src/infra/database/DatabaseConnection'
 import { MysqlAdapter } from '../../src/infra/database/MysqlAdapter'
+import { Logger } from '../../src/application/logger/Logger'
 
 let signup: Signup
 let accountRepository: AccountRepository

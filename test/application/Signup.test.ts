@@ -1,13 +1,13 @@
 import sinon from 'sinon'
 import { GetAccount } from '../../src/application/usecases/GetAccount'
 import { Signup } from '../../src/application/usecases/Signup'
-import { Logger } from '../../src/application/gateway/Logger'
-import { LoggerConsole } from '../../src/infra/gateway/LoggerConsole'
+import { LoggerConsole } from '../../src/infra/logger/LoggerConsole'
 import { AccountRepositoryDatabase } from '../../src/infra/repositories/AccountRepositoryDatabase'
 import { AccountRepository } from '../../src/application/repositories/AccountRepository'
 import { Account } from '../../src/domain/Account'
 import { DatabaseConnection } from '../../src/infra/database/DatabaseConnection'
 import { MysqlAdapter } from '../../src/infra/database/MysqlAdapter'
+import { Logger } from '../../src/application/logger/Logger'
 
 let signup: Signup
 let getAccount: GetAccount

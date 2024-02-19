@@ -1,4 +1,4 @@
-import { Logger } from '../../application/gateway/Logger'
+import { Logger } from '../../application/logger/Logger'
 
 export class LoggerConsole implements Logger {
   async log(message: string) {

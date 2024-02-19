@@ -1,7 +1,7 @@
 import { AccountRepositoryDatabase } from './infra/repositories/AccountRepositoryDatabase'
 import { ExpressAdapter } from './infra/http/ExpressAdapter'
 import { GetAccount } from './application/usecases/GetAccount'
-import { LoggerConsole } from './infra/gateway/LoggerConsole'
+import { LoggerConsole } from './infra/logger/LoggerConsole'
 import { MainController } from './infra/controller/MainController'
 import { MysqlAdapter } from './infra/database/MysqlAdapter'
 import { Signup } from './application/usecases/Signup'
