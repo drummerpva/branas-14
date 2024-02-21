@@ -1,5 +1,5 @@
+import { Logger } from '../logger/Logger'
 import { AccountRepository } from '../repositories/AccountRepository'
-import { Logger } from '../gateway/Logger'
 import { RideRepository } from '../repositories/RideRepository'
 
 export class AcceptRide {

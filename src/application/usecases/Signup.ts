@@ -1,6 +1,6 @@
 import { Account } from '../../domain/Account'
+import { Logger } from '../logger/Logger'
 import { AccountRepository } from '../repositories/AccountRepository'
-import { Logger } from '../gateway/Logger'
 
 export class Signup {
   constructor(
