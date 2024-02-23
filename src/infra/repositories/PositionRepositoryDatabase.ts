@@ -1,4 +1,5 @@
 import { PositionRepository } from '../../application/repositories/PositionRepository'
+import { Coord } from '../../domain/Coor'
 import { Position } from '../../domain/Position'
 import { DatabaseConnection } from '../database/DatabaseConnection'
 
@@ -8,8 +9,8 @@ export class PositionRepositoryDatabase implements PositionRepository {
     await this.connection.query(`INSERT INTO position VALUES(?,?,?,?,?)`, [
       position.positionId,
       position.rideId,
-      position.lat,
-      position.long,
+      position.coord.lat,
+      position.coord.long,
       position.date,
     ])
   }
@@ -25,8 +26,7 @@ export class PositionRepositoryDatabase implements PositionRepository {
         new Position(
           positionData.position_id,
           positionData.ride_id,
-          Number(positionData.lat),
-          Number(positionData.long),
+          new Coord(Number(positionData.lat), Number(positionData.long)),
           positionData.date,
         ),
       )

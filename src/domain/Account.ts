@@ -1,29 +1,28 @@
 import crypto from 'node:crypto'
-import { validateCpf } from './CpfValidator'
+import { Name } from './Name'
+import { Email } from './Email'
+import { Cpf } from './Cpf'
+import { CarPlate } from './CarPlate'
 
 export class Account {
-  public name: string
-  public email: string
-  public cpf: string
-  public carPlate: string
+  public name: Name
+  public email: Email
+  public cpf: Cpf
+  public carPlate: CarPlate
   public isPassenger: boolean
   public isDriver: boolean
   public accountId: string
 
   private constructor(
     accountId: string,
-    name: string,
-    email: string,
-    cpf: string,
-    carPlate: string,
+    name: Name,
+    email: Email,
+    cpf: Cpf,
+    carPlate: CarPlate,
     isPassenger: boolean,
     isDriver: boolean,
   ) {
-    if (!this.isValidName(name)) throw new Error('Invalid name')
-    if (!this.isValidEmail(email)) throw new Error('Invalid email')
-    if (!validateCpf(cpf)) throw new Error('Invalid cpf')
-    if (isDriver && !this.isValidCarPlate(carPlate))
-      throw new Error('Invalid car plate')
+    if (isDriver && !carPlate.value) throw new Error('Invalid car plate')
     this.accountId = accountId
     this.name = name
     this.email = email
@@ -44,10 +43,10 @@ export class Account {
     const accountId = crypto.randomUUID()
     return new Account(
       accountId,
-      name,
-      email,
-      cpf,
-      carPlate,
+      new Name(name),
+      new Email(email),
+      new Cpf(cpf),
+      new CarPlate(carPlate),
       isPassenger,
       isDriver,
     )
@@ -64,24 +63,12 @@ export class Account {
   ) {
     return new Account(
       accountId,
-      name,
-      email,
-      cpf,
-      carPlate,
+      new Name(name),
+      new Email(email),
+      new Cpf(cpf),
+      new CarPlate(carPlate),
       isPassenger,
       isDriver,
     )
-  }
-
-  isValidName(name: string) {
-    return name.match(/[a-zA-Z] [a-zA-Z]+/)
-  }
-
-  isValidEmail(email: string) {
-    return email.match(/^(.+)@(.+)$/)
-  }
-
-  isValidCarPlate(carPlate: string) {
-    return carPlate.match(/[A-Z]{3}[0-9]{4}/)
   }
 }

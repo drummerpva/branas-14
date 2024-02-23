@@ -67,7 +67,7 @@ test.each(['97456321558', '71428793860', '87748248800'])(
   'Deve criar uma conta para o passageiro (MOCK)',
   async function (cpf: string) {
     const mockLogger = sinon.mock(LoggerConsole.prototype)
-    mockLogger.expects('log').withArgs('Signup John Doe').once()
+    mockLogger.expects('log').withArgs('Signup').once()
     // given
     const inputSignup = {
       name: 'John Doe',
@@ -173,7 +173,7 @@ test('Deve criar uma conta para o motorista (SPY)', async function () {
   expect(outputGetAccount?.name).toBe(inputSignup.name)
   expect(outputGetAccount?.email).toBe(inputSignup.email)
   expect(loggerSpy.calledOnce).toBe(true)
-  expect(loggerSpy.calledWith(`Signup ${inputSignup.name}`)).toBe(true)
+  expect(loggerSpy.calledWith(`Signup`)).toBe(true)
   sinon.restore()
 })
 

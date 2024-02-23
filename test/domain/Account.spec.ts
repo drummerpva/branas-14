@@ -10,7 +10,7 @@ test('Deve criar uma conta', () => {
     false,
   )
   expect(account.accountId).toBeDefined()
-  expect(account.name).toBe('John Doe')
-  expect(account.email).toBe('john.doe@gmail.com')
-  expect(account.cpf).toBe('98765432100')
+  expect(account.name.value).toBe('John Doe')
+  expect(account.email.value).toBe('john.doe@gmail.com')
+  expect(account.cpf.value).toBe('98765432100')
 })

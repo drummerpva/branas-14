@@ -9,7 +9,7 @@ export class Signup {
   ) {}
 
   async execute(input: Input): Promise<Output> {
-    this.logger.log(`Signup ${input.name}`)
+    this.logger.log(`Signup`)
     const existingAccount = await this.accountRepository.getByEmail(input.email)
     if (existingAccount) throw new Error('Duplicated account')
     const account = Account.create(

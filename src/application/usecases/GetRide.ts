@@ -17,10 +17,10 @@ export class GetRide {
     let distance = 0
     for (const [index, position] of positions.entries()) {
       if (!positions[index + 1]) break
-      const from = { lat: position.lat, long: position.long }
+      const from = { lat: position.coord.lat, long: position.coord.long }
       const to = {
-        lat: positions[index + 1].lat,
-        long: positions[index + 1].long,
+        lat: positions[index + 1].coord.lat,
+        long: positions[index + 1].coord.long,
       }
       const earthRadius = 6371
       const degreesToRadians = Math.PI / 180
