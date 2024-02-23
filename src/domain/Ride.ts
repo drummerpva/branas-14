@@ -1,17 +1,21 @@
 import { randomUUID } from 'crypto'
+import { RideStatus, RideStatusFactory } from './RideStatus'
 
 export class Ride {
+  public status: RideStatus
   constructor(
     readonly rideId: string,
     readonly passengerId: string,
     private driverId: string,
-    private status: string,
+    status: string,
     readonly date: Date,
     readonly fromLat: number,
     readonly fromLong: number,
     readonly toLat: number,
     readonly toLong: number,
-  ) {}
+  ) {
+    this.status = RideStatusFactory.create(status, this)
+  }
 
   static create(
     passengerId: string,
@@ -39,15 +43,15 @@ export class Ride {
 
   accept(driverId: string) {
     this.driverId = driverId
-    this.status = 'accepted'
+    this.status.accept()
   }
 
   start() {
-    this.status = 'in_progress'
+    this.status.start()
   }
 
   getStatus() {
-    return this.status
+    return this.status.value
   }
 
   getDriverId() {
