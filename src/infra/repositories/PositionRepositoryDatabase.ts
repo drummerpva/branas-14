@@ -1,5 +1,5 @@
 import { PositionRepository } from '../../application/repositories/PositionRepository'
-import { Coord } from '../../domain/Coor'
+import { Coord } from '../../domain/Coord'
 import { Position } from '../../domain/Position'
 import { DatabaseConnection } from '../database/DatabaseConnection'
 

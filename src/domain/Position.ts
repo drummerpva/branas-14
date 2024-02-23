@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { Coord } from './Coor'
+import { Coord } from './Coord'
 
 export class Position {
   constructor(
