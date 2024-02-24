@@ -1,5 +1,3 @@
-import { Coord } from '../../domain/Coord'
-import { DistanceCalculator } from '../../domain/DistanceCalculator'
 import { Logger } from '../logger/Logger'
 import { PositionRepository } from '../repositories/PositionRepository'
 import { RideRepository } from '../repositories/RideRepository'
@@ -15,24 +13,15 @@ export class GetRide {
     this.logger.log(`GetRide`)
     const ride = await this.rideRepository.getById(rideId)
     if (!ride) throw new Error('Ride not found')
-    const positions = await this.positionRepository.listByRideId(rideId)
-    let distance = 0
-    for (const [index, position] of positions.entries()) {
-      if (!positions[index + 1]) break
-      const from = new Coord(position.coord.lat, position.coord.long)
-      const to = new Coord(
-        positions[index + 1].coord.lat,
-        positions[index + 1].coord.long,
-      )
-      distance += DistanceCalculator.calculate(from, to)
-    }
+
     return {
       rideId: ride.rideId,
       status: ride.getStatus(),
       driverId: ride.getDriverId(),
       passengerId: ride.passengerId,
       date: ride.date,
-      distance,
+      distance: ride.getDistance(),
+      fare: ride.getFare(),
     }
   }
 }
@@ -44,4 +33,5 @@ type Output = {
   passengerId: string
   date: Date
   distance?: number
+  fare?: number
 }

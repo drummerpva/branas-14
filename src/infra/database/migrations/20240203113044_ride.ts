@@ -13,6 +13,8 @@ export async function up(knex: Knex): Promise<void> {
     table.float('from_long', 17, 15)
     table.float('to_lat', 17, 15)
     table.float('to_long', 17, 15)
+    table.float('last_lat', 17, 15)
+    table.float('last_long', 17, 15)
     table.timestamp('started_at')
   })
 }

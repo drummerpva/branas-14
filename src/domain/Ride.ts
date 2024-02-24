@@ -1,5 +1,8 @@
 import { randomUUID } from 'crypto'
 import { RideStatus, RideStatusFactory } from './RideStatus'
+import { Position } from './Position'
+import { Coord } from './Coord'
+import { DistanceCalculator } from './DistanceCalculator'
 
 export class Ride {
   public status: RideStatus
@@ -13,6 +16,9 @@ export class Ride {
     readonly fromLong: number,
     readonly toLat: number,
     readonly toLong: number,
+    private distance: number = 0,
+    private fare: number = 0,
+    private lastPosition?: Coord,
   ) {
     this.status = RideStatusFactory.create(status, this)
   }
@@ -50,11 +56,38 @@ export class Ride {
     this.status.start()
   }
 
+  finish() {
+    this.fare = this.distance * 2.1
+    this.status.finish()
+  }
+
+  updatePosition(position: Position) {
+    if (this.lastPosition) {
+      this.distance += DistanceCalculator.calculate(
+        this.lastPosition,
+        position.coord,
+      )
+    }
+    this.lastPosition = position.coord
+  }
+
   getStatus() {
     return this.status.value
   }
 
   getDriverId() {
     return this.driverId
+  }
+
+  getFare() {
+    return this.fare
+  }
+
+  getDistance() {
+    return this.distance
+  }
+
+  getLastPosition() {
+    return this.lastPosition
   }
 }

@@ -1,9 +1,8 @@
-import { Position } from '../../domain/Position'
 import { Logger } from '../logger/Logger'
 import { PositionRepository } from '../repositories/PositionRepository'
 import { RideRepository } from '../repositories/RideRepository'
 
-export class UpdatePosition {
+export class FinishRide {
   constructor(
     private rideRepository: RideRepository,
     private positionRepository: PositionRepository,
@@ -11,20 +10,16 @@ export class UpdatePosition {
   ) {}
 
   async execute(input: Input): Promise<void> {
-    await this.logger.log('UpdatePosition')
+    await this.logger.log('FinishRide')
     const ride = await this.rideRepository.getById(input.rideId)
     if (!ride) throw new Error('Ride not found')
     if (ride.getStatus() !== 'in_progress')
       throw new Error('Ride is not in progress')
-    const position = Position.create(input.rideId, input.lat, input.long)
-    await this.positionRepository.save(position)
-    ride.updatePosition(position)
+    ride.finish()
     await this.rideRepository.update(ride)
   }
 }
 
 type Input = {
   rideId: string
-  lat: number
-  long: number
 }
