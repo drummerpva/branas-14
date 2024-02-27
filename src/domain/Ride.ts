@@ -3,6 +3,7 @@ import { RideStatus, RideStatusFactory } from './RideStatus'
 import { Position } from './Position'
 import { Coord } from './Coord'
 import { DistanceCalculator } from './DistanceCalculator'
+import { FareCalculatorFactory } from './FareCalculator'
 
 export class Ride {
   public status: RideStatus
@@ -57,7 +58,8 @@ export class Ride {
   }
 
   finish() {
-    this.fare = this.distance * 2.1
+    const fareCalculator = FareCalculatorFactory.create(this.date)
+    this.fare = fareCalculator.calculate(this.distance)
     this.status.finish()
   }
 
