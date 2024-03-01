@@ -14,4 +14,13 @@ export class TransactionRepositoryORM implements TransactionRepository {
     const transactionModel = TransactionModel.fromEntity(transaction)
     await this.orm.save(transactionModel)
   }
+
+  async getByRideId(rideId: string): Promise<Transaction> {
+    const transactionModel = await this.orm.get(
+      TransactionModel,
+      'ride_id',
+      rideId,
+    )
+    return transactionModel.getEntity()
+  }
 }

@@ -42,4 +42,14 @@ export class TransactionModel extends Model {
       transaction.getStatus(),
     )
   }
+
+  getEntity(): Transaction {
+    return Transaction.restore(
+      this.transactionId,
+      this.rideId,
+      this.amount,
+      this.date,
+      this.status,
+    )
+  }
 }
