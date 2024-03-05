@@ -15,6 +15,11 @@ import { PositionRepository } from '../../src/application/repositories/PositionR
 import { UpdatePosition } from '../../src/application/usecases/UpdatePosition'
 import { PositionRepositoryDatabase } from '../../src/infra/repositories/PositionRepositoryDatabase'
 import { FinishRide } from '../../src/application/usecases/FinishRide'
+import { TransactionRepository } from '../../src/application/repositories/TransactionRepository'
+import { TransactionRepositoryORM } from '../../src/infra/repositories/TransactionRepositoryORM'
+import { Mediator } from '../../src/infra/mediator/Mediator'
+import { ProcessPayment } from '../../src/application/usecases/ProcessPayment'
+import { SendReceipt } from '../../src/application/usecases/SendReceipt'
 
 let signup: Signup
 let accountRepository: AccountRepository
@@ -25,9 +30,13 @@ let getRide: GetRide
 let acceptRide: AcceptRide
 let startRide: StartRide
 let databaseConnection: DatabaseConnection
+let transctionRepository: TransactionRepository
 let positionRepository: PositionRepository
 let updatePosition: UpdatePosition
 let finishRide: FinishRide
+let mediator: Mediator
+let processPayment: ProcessPayment
+let sendReceipt: SendReceipt
 
 beforeEach(() => {
   databaseConnection = new MysqlAdapter()
@@ -37,7 +46,8 @@ beforeEach(() => {
   rideRepository = new RideRepositoryDatabase(databaseConnection)
   positionRepository = new PositionRepositoryDatabase(databaseConnection)
   requestRide = new RequestRide(rideRepository, accountRepository, logger)
-  getRide = new GetRide(rideRepository, positionRepository, logger)
+  transctionRepository = new TransactionRepositoryORM(databaseConnection)
+  getRide = new GetRide(rideRepository, transctionRepository, logger)
   acceptRide = new AcceptRide(rideRepository, accountRepository, logger)
   startRide = new StartRide(rideRepository, accountRepository, logger)
   updatePosition = new UpdatePosition(
@@ -45,7 +55,17 @@ beforeEach(() => {
     positionRepository,
     logger,
   )
-  finishRide = new FinishRide(rideRepository, positionRepository, logger)
+  processPayment = new ProcessPayment(transctionRepository)
+  sendReceipt = new SendReceipt()
+  mediator = new Mediator()
+  mediator.register('rideCompleted', processPayment)
+  mediator.register('rideCompleted', sendReceipt)
+  finishRide = new FinishRide(
+    rideRepository,
+    positionRepository,
+    logger,
+    mediator,
+  )
 })
 afterEach(async () => {
   await databaseConnection.close()
@@ -107,4 +127,5 @@ test('Deve atualizar localização e calcular distância percorrida', async () =
   expect(outputGetRide.status).toBe('completed')
   expect(outputGetRide.distance).toBe(10)
   expect(outputGetRide.fare).toBe(21)
+  expect(outputGetRide.transactionId).toBeTruthy()
 })

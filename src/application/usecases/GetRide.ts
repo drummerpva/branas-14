@@ -1,11 +1,11 @@
 import { Logger } from '../logger/Logger'
-import { PositionRepository } from '../repositories/PositionRepository'
 import { RideRepository } from '../repositories/RideRepository'
+import { TransactionRepository } from '../repositories/TransactionRepository'
 
 export class GetRide {
   constructor(
     private rideRepository: RideRepository,
-    private positionRepository: PositionRepository,
+    private transactionRepository: TransactionRepository,
     private logger: Logger,
   ) {}
 
@@ -13,7 +13,7 @@ export class GetRide {
     this.logger.log(`GetRide`)
     const ride = await this.rideRepository.getById(rideId)
     if (!ride) throw new Error('Ride not found')
-
+    const transaction = await this.transactionRepository.getByRideId(rideId)
     return {
       rideId: ride.rideId,
       status: ride.getStatus(),
@@ -22,6 +22,7 @@ export class GetRide {
       date: ride.date,
       distance: ride.getDistance(),
       fare: ride.getFare(),
+      transactionId: transaction?.transactionId,
     }
   }
 }
@@ -34,4 +35,5 @@ type Output = {
   date: Date
   distance?: number
   fare?: number
+  transactionId?: string
 }

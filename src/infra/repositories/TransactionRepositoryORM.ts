@@ -21,6 +21,6 @@ export class TransactionRepositoryORM implements TransactionRepository {
       'ride_id',
       rideId,
     )
-    return transactionModel.getEntity()
+    return transactionModel?.getEntity()
   }
 }

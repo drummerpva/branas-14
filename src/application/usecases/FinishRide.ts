@@ -1,3 +1,4 @@
+import { Mediator } from '../../infra/mediator/Mediator'
 import { Logger } from '../logger/Logger'
 import { PositionRepository } from '../repositories/PositionRepository'
 import { RideRepository } from '../repositories/RideRepository'
@@ -7,6 +8,7 @@ export class FinishRide {
     private rideRepository: RideRepository,
     private positionRepository: PositionRepository,
     private logger: Logger,
+    private mediator: Mediator,
   ) {}
 
   async execute(input: Input): Promise<void> {
@@ -17,6 +19,10 @@ export class FinishRide {
       throw new Error('Ride is not in progress')
     ride.finish()
     await this.rideRepository.update(ride)
+    await this.mediator.publish('rideCompleted', {
+      rideId: ride.rideId,
+      amount: ride.getFare(),
+    })
   }
 }
 

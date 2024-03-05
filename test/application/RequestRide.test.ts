@@ -10,8 +10,8 @@ import { RideRepositoryDatabase } from '../../src/infra/repositories/RideReposit
 import { DatabaseConnection } from '../../src/infra/database/DatabaseConnection'
 import { MysqlAdapter } from '../../src/infra/database/MysqlAdapter'
 import { Logger } from '../../src/application/logger/Logger'
-import { PositionRepository } from '../../src/application/repositories/PositionRepository'
-import { PositionRepositoryDatabase } from '../../src/infra/repositories/PositionRepositoryDatabase'
+import { TransactionRepository } from '../../src/application/repositories/TransactionRepository'
+import { TransactionRepositoryORM } from '../../src/infra/repositories/TransactionRepositoryORM'
 
 let signup: Signup
 let accountRepository: AccountRepository
@@ -20,7 +20,7 @@ let rideRepository: RideRepository
 let requestRide: RequestRide
 let getRide: GetRide
 let databaseConnection: DatabaseConnection
-let positionRepository: PositionRepository
+let transactionRepository: TransactionRepository
 
 beforeEach(() => {
   databaseConnection = new MysqlAdapter()
@@ -28,9 +28,9 @@ beforeEach(() => {
   logger = new LoggerConsole()
   signup = new Signup(accountRepository, logger)
   rideRepository = new RideRepositoryDatabase(databaseConnection)
-  positionRepository = new PositionRepositoryDatabase(databaseConnection)
   requestRide = new RequestRide(rideRepository, accountRepository, logger)
-  getRide = new GetRide(rideRepository, positionRepository, logger)
+  transactionRepository = new TransactionRepositoryORM(databaseConnection)
+  getRide = new GetRide(rideRepository, transactionRepository, logger)
 })
 afterEach(async () => {
   await databaseConnection.close()

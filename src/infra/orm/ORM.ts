@@ -20,7 +20,7 @@ export class ORM {
     )
     const obj = new Entity()
     for (const column of Entity.prototype.columns) {
-      obj[column.property] = data[column.column]
+      obj[column.property] = data?.[column.column]
     }
     return obj
   }
