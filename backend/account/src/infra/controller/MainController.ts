@@ -28,9 +28,13 @@ export class MainController {
       'get',
       '/accounts/:accountId',
       async (params: any) => {
-        const accountId = params.accountId
-        const output = await this.getAccount?.execute(accountId)
-        return output
+        try {
+          const accountId = params.accountId
+          const output = await this.getAccount?.execute(accountId)
+          return output
+        } catch (error: any) {
+          return undefined
+        }
       },
     )
   }
