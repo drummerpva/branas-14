@@ -14,6 +14,8 @@ import { PositionRepositoryDatabase } from '../../src/infra/repositories/Positio
 import { FinishRide } from '../../src/application/usecases/FinishRide'
 import { AccountGateway } from '../../src/application/gateway/AccountGateway'
 import { AccountGatewayHttp } from '../../src/infra/gateway/AccountGatewayHttp'
+import { PaymentGateway } from '../../src/application/gateway/PaymentGateway'
+import { PaymentGatewayHttp } from '../../src/infra/gateway/PaymentGatewayHttp'
 
 let logger: Logger
 let rideRepository: RideRepository
@@ -26,6 +28,7 @@ let positionRepository: PositionRepository
 let updatePosition: UpdatePosition
 let finishRide: FinishRide
 let acccountGateway: AccountGateway
+let paymentGateway: PaymentGateway
 
 beforeEach(() => {
   databaseConnection = new MysqlAdapter()
@@ -33,6 +36,7 @@ beforeEach(() => {
   rideRepository = new RideRepositoryDatabase(databaseConnection)
   positionRepository = new PositionRepositoryDatabase(databaseConnection)
   acccountGateway = new AccountGatewayHttp()
+  paymentGateway = new PaymentGatewayHttp()
   requestRide = new RequestRide(rideRepository, acccountGateway, logger)
   getRide = new GetRide(rideRepository, logger)
   acceptRide = new AcceptRide(rideRepository, acccountGateway, logger)
@@ -42,7 +46,7 @@ beforeEach(() => {
     positionRepository,
     logger,
   )
-  finishRide = new FinishRide(rideRepository, positionRepository, logger)
+  finishRide = new FinishRide(rideRepository, paymentGateway, logger)
 })
 afterEach(async () => {
   await databaseConnection.close()
