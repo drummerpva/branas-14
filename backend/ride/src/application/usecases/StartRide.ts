@@ -1,11 +1,9 @@
 import { Logger } from '../logger/Logger'
-import { AccountRepository } from '../repositories/AccountRepository'
 import { RideRepository } from '../repositories/RideRepository'
 
 export class StartRide {
   constructor(
     private rideRepository: RideRepository,
-    private accountRepository: AccountRepository,
     private logger: Logger,
   ) {}
 

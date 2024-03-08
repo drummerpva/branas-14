@@ -1,21 +1,16 @@
-import { Signup } from '../../src/application/usecases/Signup'
 import { LoggerConsole } from '../../src/infra/logger/LoggerConsole'
 import { RequestRide } from '../../src/application/usecases/RequestRide'
 import { GetRide } from '../../src/application/usecases/GetRide'
 import { AcceptRide } from '../../src/application/usecases/AcceptRide'
 import { StartRide } from '../../src/application/usecases/StartRide'
-import { AccountRepository } from '../../src/application/repositories/AccountRepository'
-import { AccountRepositoryDatabase } from '../../src/infra/repositories/AccountRepositoryDatabase'
 import { RideRepository } from '../../src/application/repositories/RideRepository'
 import { RideRepositoryDatabase } from '../../src/infra/repositories/RideRepositoryDatabase'
 import { DatabaseConnection } from '../../src/infra/database/DatabaseConnection'
 import { MysqlAdapter } from '../../src/infra/database/MysqlAdapter'
 import { Logger } from '../../src/application/logger/Logger'
-import { TransactionRepository } from '../../src/application/repositories/TransactionRepository'
-import { TransactionRepositoryORM } from '../../src/infra/repositories/TransactionRepositoryORM'
+import { AccountGateway } from '../../src/application/gateway/AccountGateway'
+import { AccountGatewayHttp } from '../../src/infra/gateway/AccountGatewayHttp'
 
-let signup: Signup
-let accountRepository: AccountRepository
 let logger: Logger
 let rideRepository: RideRepository
 let requestRide: RequestRide
@@ -23,19 +18,17 @@ let getRide: GetRide
 let acceptRide: AcceptRide
 let startRide: StartRide
 let databaseConnection: DatabaseConnection
-let transactionRepository: TransactionRepository
+let accountGateway: AccountGateway
 
 beforeEach(() => {
   databaseConnection = new MysqlAdapter()
-  accountRepository = new AccountRepositoryDatabase(databaseConnection)
   logger = new LoggerConsole()
-  signup = new Signup(accountRepository, logger)
   rideRepository = new RideRepositoryDatabase(databaseConnection)
-  requestRide = new RequestRide(rideRepository, accountRepository, logger)
-  transactionRepository = new TransactionRepositoryORM(databaseConnection)
-  getRide = new GetRide(rideRepository, transactionRepository, logger)
-  acceptRide = new AcceptRide(rideRepository, accountRepository, logger)
-  startRide = new StartRide(rideRepository, accountRepository, logger)
+  accountGateway = new AccountGatewayHttp()
+  requestRide = new RequestRide(rideRepository, accountGateway, logger)
+  getRide = new GetRide(rideRepository, logger)
+  acceptRide = new AcceptRide(rideRepository, accountGateway, logger)
+  startRide = new StartRide(rideRepository, logger)
 })
 afterEach(async () => {
   await databaseConnection.close()
@@ -49,7 +42,8 @@ test('Deve iniciar uma corrida', async () => {
     isPassenger: true,
     password: '123456',
   }
-  const outputSignupPassenger = await signup.execute(inputSignupPassenger)
+  const outputSignupPassenger =
+    await accountGateway.signup(inputSignupPassenger)
   const inputRequestRide = {
     passengerId: outputSignupPassenger.accountId,
     fromLat: -27.584905257808835,
@@ -66,7 +60,7 @@ test('Deve iniciar uma corrida', async () => {
     carPlate: 'ABC1234',
     password: '123456',
   }
-  const outputSignupDriver = await signup.execute(inputSignupDriver)
+  const outputSignupDriver = await accountGateway.signup(inputSignupDriver)
   const inputAcceptRide = {
     rideId: outputRequestRide.rideId,
     driverId: outputSignupDriver.accountId,
