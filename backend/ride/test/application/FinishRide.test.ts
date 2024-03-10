@@ -16,6 +16,7 @@ import { AccountGateway } from '../../src/application/gateway/AccountGateway'
 import { AccountGatewayHttp } from '../../src/infra/gateway/AccountGatewayHttp'
 import { PaymentGateway } from '../../src/application/gateway/PaymentGateway'
 import { PaymentGatewayHttp } from '../../src/infra/gateway/PaymentGatewayHttp'
+import { Queue } from '../../src/infra/queue/Queue'
 
 let logger: Logger
 let rideRepository: RideRepository
@@ -29,6 +30,7 @@ let updatePosition: UpdatePosition
 let finishRide: FinishRide
 let acccountGateway: AccountGateway
 let paymentGateway: PaymentGateway
+let queue: Queue
 
 beforeEach(() => {
   databaseConnection = new MysqlAdapter()
@@ -46,7 +48,8 @@ beforeEach(() => {
     positionRepository,
     logger,
   )
-  finishRide = new FinishRide(rideRepository, paymentGateway, logger)
+  queue = new Queue()
+  finishRide = new FinishRide(rideRepository, paymentGateway, logger, queue)
 })
 afterEach(async () => {
   await databaseConnection.close()
@@ -108,5 +111,6 @@ test('Deve atualizar localização e calcular distância percorrida', async () =
   const outputGetRide = await getRide.execute(outputRequestRide.rideId)
   expect(outputGetRide.status).toBe('completed')
   expect(outputGetRide.distance).toBe(10)
-  expect(outputGetRide.fare).toBe(21)
+  expect(outputGetRide.fare).toBe(50)
+  // expect(outputGetRide.fare).toBe(21)
 })

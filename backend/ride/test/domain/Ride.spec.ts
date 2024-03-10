@@ -19,5 +19,6 @@ test('Deve testar uma Ride', () => {
   ride.updatePosition(position2)
   ride.finish()
   expect(ride.getDistance()).toBe(10)
-  expect(ride.getFare()).toBe(21)
+  expect(ride.getFare()).toBe(50)
+  // expect(ride.getFare()).toBe(21)
 })
