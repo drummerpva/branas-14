@@ -3,11 +3,13 @@ import { MysqlAdapter } from '../../src/infra/database/MysqlAdapter'
 import { TransactionRepositoryORM } from '../../src/infra/repositories/TransactionRepositoryORM'
 import { ProcessPayment } from '../../src/application/usecases/ProcessPayment'
 import { GetTransactionByRideId } from '../../src/application/usecases/GetTransactionByRideId'
+import { Queue } from '../../src/infra/queue/Queue'
 
 test('Deve processar um pagamento', async () => {
   const connection = new MysqlAdapter()
   const transactionRepository = new TransactionRepositoryORM(connection)
-  const processPayment = new ProcessPayment(transactionRepository)
+  const queue = new Queue()
+  const processPayment = new ProcessPayment(transactionRepository, queue)
   const rideId = randomUUID()
   const inputProcessPayment = {
     rideId,
