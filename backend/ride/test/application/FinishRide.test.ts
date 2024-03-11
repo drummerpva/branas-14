@@ -49,6 +49,10 @@ beforeEach(() => {
     logger,
   )
   queue = new Queue()
+  // queue = {
+  //   consume: async () => {},
+  //   publish: async () => {},
+  // }
   finishRide = new FinishRide(rideRepository, paymentGateway, logger, queue)
 })
 afterEach(async () => {

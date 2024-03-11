@@ -12,6 +12,7 @@ export class Queue {
     const connection = await amqp.connect('amqp://localhost')
     const channel = await connection.createChannel()
     await channel.assertQueue(queue, { durable: true })
+    console.log(`Consming queue ${queue}`)
     await channel.consume(queue, async (message: any) => {
       const input = JSON.parse(message?.content?.toString())
       await callback(input)

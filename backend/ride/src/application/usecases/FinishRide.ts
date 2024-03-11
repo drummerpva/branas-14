@@ -1,3 +1,4 @@
+import { DomainEvent } from '../../domain/event/DomainEvent'
 import { Queue } from '../../infra/queue/Queue'
 import { PaymentGateway } from '../gateway/PaymentGateway'
 import { Logger } from '../logger/Logger'
@@ -15,18 +16,17 @@ export class FinishRide {
     await this.logger.log('FinishRide')
     const ride = await this.rideRepository.getById(input.rideId)
     if (!ride) throw new Error('Ride not found')
+    // ride.register(async (event: DomainEvent) => {
+    //   await this.queue.publish(event.name, event)
+    //   console.log(event.name)
+    // })
     if (ride.getStatus() !== 'in_progress')
       throw new Error('Ride is not in progress')
     ride.finish()
     await this.rideRepository.update(ride)
-    await this.queue.publish('rideCompleted', {
-      rideId: ride.rideId,
-      amount: ride.getFare(),
-    })
-    // await this.paymentGateway.processPayment({
-    //   rideId: ride.rideId,
-    //   amount: ride.getFare(),
-    // })
+    for (const event of ride.getEvents()) {
+      await this.queue.publish(event.name, event)
+    }
   }
 }
 

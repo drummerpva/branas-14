@@ -4,9 +4,13 @@ import { Position } from './Position'
 import { Coord } from './Coord'
 import { DistanceCalculator } from './DistanceCalculator'
 import { FareCalculatorFactory } from './FareCalculator'
+import { RideCompletedEvent } from './event/RideCompletedEvent'
+import { Aggregate } from './Aggregate'
+import { DomainEvent } from './event/DomainEvent'
 
-export class Ride {
+export class Ride extends Aggregate {
   public status: RideStatus
+  private events: DomainEvent[]
   constructor(
     readonly rideId: string,
     readonly passengerId: string,
@@ -21,7 +25,9 @@ export class Ride {
     private fare: number = 0,
     private lastPosition?: Coord,
   ) {
+    super()
     this.status = RideStatusFactory.create(status, this)
+    this.events = []
   }
 
   static create(
@@ -61,6 +67,9 @@ export class Ride {
     const fareCalculator = FareCalculatorFactory.create(this.date)
     this.fare = fareCalculator.calculate(this.distance)
     this.status.finish()
+    const event = new RideCompletedEvent(this.rideId, this.fare)
+    this.notify(event)
+    this.events.push(event)
   }
 
   updatePosition(position: Position) {
@@ -91,5 +100,9 @@ export class Ride {
 
   getLastPosition() {
     return this.lastPosition
+  }
+
+  getEvents() {
+    return this.events
   }
 }
