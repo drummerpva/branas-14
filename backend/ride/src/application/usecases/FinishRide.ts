@@ -1,4 +1,3 @@
-import { DomainEvent } from '../../domain/event/DomainEvent'
 import { Queue } from '../../infra/queue/Queue'
 import { PaymentGateway } from '../gateway/PaymentGateway'
 import { Logger } from '../logger/Logger'
@@ -18,7 +17,7 @@ export class FinishRide {
     if (!ride) throw new Error('Ride not found')
     // ride.register(async (event: DomainEvent) => {
     //   await this.queue.publish(event.name, event)
-    //   console.log(event.name)
+    //   Não funciona, precisa transaformar o método notify em async bem como o notify em Aggregate
     // })
     if (ride.getStatus() !== 'in_progress')
       throw new Error('Ride is not in progress')

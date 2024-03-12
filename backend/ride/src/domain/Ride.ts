@@ -68,8 +68,8 @@ export class Ride extends Aggregate {
     this.fare = fareCalculator.calculate(this.distance)
     this.status.finish()
     const event = new RideCompletedEvent(this.rideId, this.fare)
-    this.notify(event)
     this.events.push(event)
+    this.notify(event)
   }
 
   updatePosition(position: Position) {
