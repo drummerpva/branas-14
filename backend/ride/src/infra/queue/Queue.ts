@@ -1,17 +1,23 @@
 import amqp from 'amqplib'
 
 export class Queue {
-  async publish(queue: string, data: any) {
+  async publish(exchange: string, data: any) {
     const connection = await amqp.connect('amqp://localhost')
     const channel = await connection.createChannel()
-    await channel.assertQueue(queue, { durable: true })
-    channel.sendToQueue(queue, Buffer.from(JSON.stringify(data)))
+    await channel.assertExchange(exchange, 'direct', { durable: true })
+    channel.publish(exchange, '', Buffer.from(JSON.stringify(data)))
   }
 
-  async consume(queue: string, callback: (input: any) => Promise<void>) {
+  async consume(
+    exchange: string,
+    queue: string,
+    callback: (input: any) => Promise<void>,
+  ) {
     const connection = await amqp.connect('amqp://localhost')
     const channel = await connection.createChannel()
+    await channel.assertExchange(exchange, 'direct', { durable: true })
     await channel.assertQueue(queue, { durable: true })
+    await channel.bindQueue(queue, exchange, '')
     console.log(`Consuming queue ${queue}`)
     await channel.consume(queue, async (message: any) => {
       const input = JSON.parse(message?.content?.toString())

@@ -1,5 +1,6 @@
 import { RequestRide } from '../../application/usecases/RequestRide'
 import { SendReceipt } from '../../application/usecases/SendReceipt'
+import { UpdateRideProjection } from '../../application/usecases/UpdateRideProjection'
 import { inject } from '../di/Registry'
 import { Queue } from './Queue'
 
@@ -13,13 +14,32 @@ export class QueueController {
   @inject('requestRide')
   requestRide?: RequestRide
 
-  constructor() {
-    this.queue?.consume('paymentApproved', async (input: any) => {
-      await this.sendReceipt?.execute(input)
-    })
+  @inject('updateRideProjection')
+  updateRideProjection?: UpdateRideProjection
 
-    this.queue?.consume('requestRide', async (input: any) => {
-      await this.requestRide?.execute(input)
-    })
+  constructor() {
+    this.queue?.consume(
+      'paymentApproved',
+      'paymentApproved.sendReceipt',
+      async (input: any) => {
+        await this.sendReceipt?.execute(input)
+      },
+    )
+
+    this.queue?.consume(
+      'requestRide',
+      'requestRide.requestRide',
+      async (input: any) => {
+        await this.requestRide?.execute(input)
+      },
+    )
+
+    this.queue?.consume(
+      'rideCompleted',
+      'rideCompleted.updateProjection',
+      async (input: any) => {
+        await this.updateRideProjection?.execute(input)
+      },
+    )
   }
 }

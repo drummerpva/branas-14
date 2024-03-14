@@ -1,6 +1,5 @@
 import { LoggerConsole } from '../../src/infra/logger/LoggerConsole'
 import { RequestRide } from '../../src/application/usecases/RequestRide'
-import { GetRide } from '../../src/application/usecases/GetRide'
 import { AcceptRide } from '../../src/application/usecases/AcceptRide'
 import { StartRide } from '../../src/application/usecases/StartRide'
 import { RideRepository } from '../../src/application/repositories/RideRepository'
@@ -17,11 +16,12 @@ import { AccountGatewayHttp } from '../../src/infra/gateway/AccountGatewayHttp'
 import { PaymentGateway } from '../../src/application/gateway/PaymentGateway'
 import { PaymentGatewayHttp } from '../../src/infra/gateway/PaymentGatewayHttp'
 import { Queue } from '../../src/infra/queue/Queue'
+import { GetRideQuery } from '../../src/application/query/GetRideQuery'
 
 let logger: Logger
 let rideRepository: RideRepository
 let requestRide: RequestRide
-let getRide: GetRide
+let getRide: GetRideQuery
 let acceptRide: AcceptRide
 let startRide: StartRide
 let databaseConnection: DatabaseConnection
@@ -40,7 +40,8 @@ beforeEach(() => {
   acccountGateway = new AccountGatewayHttp()
   paymentGateway = new PaymentGatewayHttp()
   requestRide = new RequestRide(rideRepository, acccountGateway, logger)
-  getRide = new GetRide(rideRepository, logger)
+  // getRide = new GetRideAPIComposition(rideRepository, acccountGateway)
+  getRide = new GetRideQuery(databaseConnection)
   acceptRide = new AcceptRide(rideRepository, acccountGateway, logger)
   startRide = new StartRide(rideRepository, logger)
   updatePosition = new UpdatePosition(
@@ -78,7 +79,7 @@ test('Deve atualizar localização e calcular distância percorrida', async () =
   }
   const outputRequestRide = await requestRide.execute(inputRequestRide)
   const inputSignupDriver = {
-    name: 'John Doe',
+    name: 'John Doe Driver',
     email: `john.doe${Math.random()}@gmail.com`,
     cpf: '98765432100',
     isDriver: true,
@@ -117,4 +118,7 @@ test('Deve atualizar localização e calcular distância percorrida', async () =
   expect(outputGetRide.distance).toBe(10)
   expect(outputGetRide.fare).toBe(50)
   // expect(outputGetRide.fare).toBe(21)
+  expect(outputGetRide.passengerName).toBe('John Doe')
+  expect(outputGetRide.passengerCpf).toBe('98765432100')
+  expect(outputGetRide.driverCarPlate).toBe('ABC1234')
 })
