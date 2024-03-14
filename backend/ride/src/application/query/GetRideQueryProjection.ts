@@ -1,27 +1,16 @@
 import { DatabaseConnection } from '../../infra/database/DatabaseConnection'
 
-export class GetRideQuery {
+export class GetRideQueryProjection {
   constructor(readonly connection: DatabaseConnection) {}
 
   async execute(rideId: string): Promise<Output> {
     const [rideData] = await this.connection.query(
-      `
+      /* sql */ `
       SELECT 
-        r.ride_id,
-        r.fare,
-        r.distance,
-        r.status,
-        r.driver_id,
-        r.passenger_id,
-        p.name as passenger_name,
-        p.cpf as passenger_cpf,
-        d.car_plate as driver_car_plate
+        *
       FROM
-        ride r
-        JOIN account p ON r.passenger_id = p.account_id
-        LEFT JOIN account d ON r.driver_id = d.account_id
-        WHERE
-        r.ride_id = ?
+        ride_projection
+      WHERE ride_id = ?
     `,
       [rideId],
     )
