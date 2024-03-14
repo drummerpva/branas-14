@@ -1,6 +1,6 @@
 import { RequestRide } from '../../application/usecases/RequestRide'
 import { SendReceipt } from '../../application/usecases/SendReceipt'
-import { UpdateRideProjection } from '../../application/usecases/UpdateRideProjection'
+import { UpdateRideProjectionAPIComposition } from '../../application/usecases/UpdateRideProjectionAPIComposition'
 import { inject } from '../di/Registry'
 import { Queue } from './Queue'
 
@@ -15,7 +15,7 @@ export class QueueController {
   requestRide?: RequestRide
 
   @inject('updateRideProjection')
-  updateRideProjection?: UpdateRideProjection
+  updateRideProjection?: UpdateRideProjectionAPIComposition
 
   constructor() {
     this.queue?.consume(

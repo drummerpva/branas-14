@@ -9,7 +9,7 @@ import { QueueController } from './infra/queue/QueueController'
 import { RequestRide } from './application/usecases/RequestRide'
 import { RideRepositoryDatabase } from './infra/repositories/RideRepositoryDatabase'
 import { AccountGatewayHttp } from './infra/gateway/AccountGatewayHttp'
-import { UpdateRideProjection } from './application/usecases/UpdateRideProjection'
+import { UpdateRideProjectionAPIComposition } from './application/usecases/UpdateRideProjectionAPIComposition'
 
 const databaseConnection = new MysqlAdapter()
 const httpServer = new ExpressAdapter()
@@ -20,7 +20,10 @@ const sendReceipt = new SendReceipt()
 const rideRepository = new RideRepositoryDatabase(databaseConnection)
 const accountGateway = new AccountGatewayHttp()
 const requestRide = new RequestRide(rideRepository, accountGateway, logger)
-const updateRideProjection = new UpdateRideProjection(databaseConnection)
+const updateRideProjection = new UpdateRideProjectionAPIComposition(
+  databaseConnection,
+  accountGateway,
+)
 registry.register('httpServer', httpServer)
 registry.register('queue', queue)
 registry.register('sendReceipt', sendReceipt)
