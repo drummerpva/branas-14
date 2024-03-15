@@ -13,6 +13,7 @@ import { UpdatePosition } from '../../src/application/usecases/UpdatePosition'
 import { PositionRepositoryDatabase } from '../../src/infra/repositories/PositionRepositoryDatabase'
 import { AccountGateway } from '../../src/application/gateway/AccountGateway'
 import { AccountGatewayHttp } from '../../src/infra/gateway/AccountGatewayHttp'
+import { FetchAdapter } from '../../src/infra/http/FetchAdapter'
 
 let logger: Logger
 let rideRepository: RideRepository
@@ -30,7 +31,8 @@ beforeEach(() => {
   logger = new LoggerConsole()
   rideRepository = new RideRepositoryDatabase(databaseConnection)
   positionRepository = new PositionRepositoryDatabase(databaseConnection)
-  accountGateway = new AccountGatewayHttp()
+  const httpClient = new FetchAdapter()
+  accountGateway = new AccountGatewayHttp(httpClient)
   requestRide = new RequestRide(rideRepository, accountGateway, logger)
   getRide = new GetRide(rideRepository, logger)
   acceptRide = new AcceptRide(rideRepository, accountGateway, logger)

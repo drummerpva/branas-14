@@ -17,6 +17,7 @@ import { PaymentGateway } from '../../src/application/gateway/PaymentGateway'
 import { PaymentGatewayHttp } from '../../src/infra/gateway/PaymentGatewayHttp'
 import { Queue } from '../../src/infra/queue/Queue'
 import { GetRideQuery } from '../../src/application/query/GetRideQuery'
+import { FetchAdapter } from '../../src/infra/http/FetchAdapter'
 
 let logger: Logger
 let rideRepository: RideRepository
@@ -37,7 +38,8 @@ beforeEach(() => {
   logger = new LoggerConsole()
   rideRepository = new RideRepositoryDatabase(databaseConnection)
   positionRepository = new PositionRepositoryDatabase(databaseConnection)
-  acccountGateway = new AccountGatewayHttp()
+  const httpClient = new FetchAdapter()
+  acccountGateway = new AccountGatewayHttp(httpClient)
   paymentGateway = new PaymentGatewayHttp()
   requestRide = new RequestRide(rideRepository, acccountGateway, logger)
   // getRide = new GetRideAPIComposition(rideRepository, acccountGateway)

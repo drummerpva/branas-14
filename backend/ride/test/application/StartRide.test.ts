@@ -10,6 +10,7 @@ import { MysqlAdapter } from '../../src/infra/database/MysqlAdapter'
 import { Logger } from '../../src/application/logger/Logger'
 import { AccountGateway } from '../../src/application/gateway/AccountGateway'
 import { AccountGatewayHttp } from '../../src/infra/gateway/AccountGatewayHttp'
+import { FetchAdapter } from '../../src/infra/http/FetchAdapter'
 
 let logger: Logger
 let rideRepository: RideRepository
@@ -24,7 +25,8 @@ beforeEach(() => {
   databaseConnection = new MysqlAdapter()
   logger = new LoggerConsole()
   rideRepository = new RideRepositoryDatabase(databaseConnection)
-  accountGateway = new AccountGatewayHttp()
+  const httpClient = new FetchAdapter()
+  accountGateway = new AccountGatewayHttp(httpClient)
   requestRide = new RequestRide(rideRepository, accountGateway, logger)
   getRide = new GetRide(rideRepository, logger)
   acceptRide = new AcceptRide(rideRepository, accountGateway, logger)
