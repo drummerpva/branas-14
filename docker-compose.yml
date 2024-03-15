@@ -7,8 +7,6 @@ services:
       MYSQL_DATABASE: ${DATABASE_NAME}
     ports:
       - "3306:3306"
-    volumes:
-      - ./.docker/db:/var/lib/mysql
 
   myadmin:
     image: phpmyadmin:5.2
