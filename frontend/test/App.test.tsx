@@ -1,6 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../src/App'
+import { AccountGateway } from '../src/infra/gateway/AccountGateway'
+
+let accountGateway: AccountGateway
+beforeEach(() => {
+  accountGateway = {
+    async signup() {
+      return { accountId: '6a85aebe-c25d-4f74-a37a-35d54a7a8ea8' }
+    },
+  }
+})
 
 test('Deve testar o componente de signup', async () => {
   const inputSignup = {
@@ -11,7 +21,7 @@ test('Deve testar o componente de signup', async () => {
     password: '123456123',
     carPlate: 'ABC1234',
   }
-  const { container } = render(<App />)
+  const { container } = render(<App accountGateway={accountGateway} />)
   await userEvent.click(container.querySelector('.is-driver')!)
   await userEvent.click(container.querySelector('.is-passenger')!)
   await userEvent.click(container.querySelector('.next-button')!)
@@ -58,7 +68,7 @@ test('Deve testar o fluxo do wizard passenger', async () => {
     password: '123456',
     carPlate: 'ABC1234',
   }
-  const { container } = render(<App />)
+  const { container } = render(<App accountGateway={accountGateway} />)
   expect(container.querySelector('.step')?.innerHTML).toBe('Step 1')
   await userEvent.click(container.querySelector('.is-passenger')!)
   expect(container.querySelector('.previous-button')).toBeFalsy()
@@ -98,7 +108,7 @@ test('Deve testar o fluxo do wizard driver', async () => {
     password: '123456',
     carPlate: 'ABC1234',
   }
-  const { container } = render(<App />)
+  const { container } = render(<App accountGateway={accountGateway} />)
   expect(container.querySelector('.step')?.innerHTML).toBe('Step 1')
   await userEvent.click(container.querySelector('.is-passenger')!)
   expect(container.querySelector('.previous-button')).toBeFalsy()
@@ -138,7 +148,7 @@ test('Deve testar o fluxo do wizard driver', async () => {
   expect(container.querySelector('.step')?.innerHTML).toBe('Step 1')
 })
 test('Não deve ir para o passo 2, se pelo menos uma opção(passenger ou driver) não estiver marcada', async () => {
-  const { container } = render(<App />)
+  const { container } = render(<App accountGateway={accountGateway} />)
   await userEvent.click(container.querySelector('.next-button')!)
   expect(container.querySelector('.step')?.innerHTML).toBe('Step 1')
   expect(container.querySelector('.error')?.textContent).toBe(
@@ -146,13 +156,13 @@ test('Não deve ir para o passo 2, se pelo menos uma opção(passenger ou driver
   )
 })
 test('Deve ir para o passo 2 tendo selecionado uma opção', async () => {
-  const { container } = render(<App />)
+  const { container } = render(<App accountGateway={accountGateway} />)
   await userEvent.click(container.querySelector('.is-passenger')!)
   await userEvent.click(container.querySelector('.next-button')!)
   expect(container.querySelector('.step')?.innerHTML).toBe('Step 2')
 })
 test('Deve ir para o passo 2 tendo selecionado uma opção, depois de ter recebido o erro e o erro deve ser apagado', async () => {
-  const { container } = render(<App />)
+  const { container } = render(<App accountGateway={accountGateway} />)
   await userEvent.click(container.querySelector('.next-button')!)
   expect(container.querySelector('.step')?.innerHTML).toBe('Step 1')
   expect(container.querySelector('.error')?.textContent).toBe(
@@ -172,7 +182,7 @@ test('Deve ir para o passo 3 se os campos nome, email, cpf e placa do carro(se f
     password: '123456',
     carPlate: 'ABC1234',
   }
-  const { container } = render(<App />)
+  const { container } = render(<App accountGateway={accountGateway} />)
   await userEvent.click(container.querySelector('.next-button')!)
   await userEvent.click(container.querySelector('.is-driver')!)
   await userEvent.click(container.querySelector('.is-passenger')!)

@@ -1,14 +1,21 @@
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { AccountGateway } from './infra/gateway/AccountGateway'
 
-function App() {
+type AppProps = {
+  accountGateway: AccountGateway
+}
+
+function App({ accountGateway }: AppProps) {
   const [signupForm, setSignupForm] = useState({
-    name: '',
-    email: '',
-    cpf: '',
-    step: 1,
-    carPlate: '',
-    isPassenger: false,
-    isDriver: false,
+    form: {
+      name: '',
+      email: '',
+      cpf: '',
+      step: 1,
+      carPlate: '',
+      isPassenger: false,
+      isDriver: false,
+    },
   })
   const [accountId, setAccountId] = useState('')
   const [error, setError] = useState('')
@@ -17,63 +24,73 @@ function App() {
     (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value, checked } = event.target
       if (name === 'isPassenger' || name === 'isDriver') {
-        setSignupForm((prev) => ({ ...prev, [name]: checked }))
+        setSignupForm((prev) => ({ form: { ...prev.form, [name]: checked } }))
         return
       }
-      setSignupForm((prev) => ({ ...prev, [name]: value }))
+      setSignupForm((prev) => ({ form: { ...prev.form, [name]: value } }))
     },
     [],
   )
 
   const nextStep = useCallback(() => {
     setSignupForm((prev) => {
-      if (prev.step === 1 && !prev.isPassenger && !prev.isDriver) {
+      if (
+        prev.form.step === 1 &&
+        !prev.form.isPassenger &&
+        !prev.form.isDriver
+      ) {
         setError('Select at least one option')
         return prev
       }
-      if (prev.step === 2) {
-        if (!prev.name) {
+      if (prev.form.step === 2) {
+        if (!prev.form.name) {
           setError('Invalid name')
           return prev
         }
-        if (!prev.email) {
+        if (!prev.form.email) {
           setError('Invalid email')
           return prev
         }
-        if (!prev.cpf) {
+        if (!prev.form.cpf) {
           setError('Invalid CPF')
           return prev
         }
-        if (prev.isDriver && !prev.carPlate) {
+        if (prev.form.isDriver && !prev.form.carPlate) {
           setError('Invalid car plate')
           return prev
         }
       }
       setError('')
-      return { ...prev, step: prev.step + 1 }
+      return { form: { ...prev.form, step: prev.form.step + 1 } }
     })
   }, [])
   const previousStep = useCallback(() => {
-    setSignupForm((prev) => ({ ...prev, step: prev.step - 1 }))
+    setSignupForm((prev) => ({
+      form: { ...prev.form, step: prev.form.step - 1 },
+    }))
   }, [])
 
   const handleSubmit = useCallback(async () => {
-    const response = await fetch('http://localhost:3001/signup', {
-      method: 'POST',
-      body: JSON.stringify(signupForm),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    const data = await response.json()
-    setAccountId(data.accountId)
+    const input = signupForm
+    const output = await accountGateway.signup(input)
+    setAccountId(output.accountId)
     nextStep()
-  }, [nextStep, signupForm])
+  }, [nextStep, signupForm, accountGateway])
+
+  const isNextButtonVisible = useMemo(() => {
+    return signupForm.form.step < 3
+  }, [signupForm])
+  const isPreviousButtonVisible = useMemo(() => {
+    return signupForm.form.step > 1 && signupForm.form.step < 4
+  }, [signupForm])
+  const isSubmitButtonVisible = useMemo(() => {
+    return signupForm.form.step === 3
+  }, [signupForm])
 
   return (
     <>
-      <div className="step">Step {signupForm.step}</div>
-      {signupForm.step === 1 && (
+      <div className="step">Step {signupForm.form.step}</div>
+      {signupForm.form.step === 1 && (
         <>
           <div>
             <input
@@ -81,7 +98,7 @@ function App() {
               className="is-passenger"
               id="is-passenger"
               name="isPassenger"
-              checked={signupForm.isPassenger}
+              checked={signupForm.form.isPassenger}
               onChange={handleChangeForm}
             />
             <label htmlFor="is-passenger">Passageiro</label>
@@ -92,7 +109,7 @@ function App() {
               className="is-driver"
               id="is-driver"
               name="isDriver"
-              checked={signupForm.isDriver}
+              checked={signupForm.form.isDriver}
               onChange={handleChangeForm}
             />
             <label htmlFor="is-driver">Motorista</label>
@@ -100,7 +117,7 @@ function App() {
         </>
       )}
       <br />
-      {signupForm.step === 2 && (
+      {signupForm.form.step === 2 && (
         <>
           <div>
             <label htmlFor="name">Name</label>
@@ -109,7 +126,7 @@ function App() {
               type="text"
               className="input-name"
               onChange={handleChangeForm}
-              value={signupForm.name}
+              value={signupForm.form.name}
               placeholder="Name"
             />
           </div>
@@ -120,7 +137,7 @@ function App() {
               type="text"
               className="input-email"
               onChange={handleChangeForm}
-              value={signupForm.email}
+              value={signupForm.form.email}
               placeholder="Email"
             />
           </div>
@@ -131,11 +148,11 @@ function App() {
               type="text"
               className="input-cpf"
               onChange={handleChangeForm}
-              value={signupForm.cpf}
+              value={signupForm.form.cpf}
               placeholder="CPF"
             />
           </div>
-          {signupForm.isDriver && (
+          {signupForm.form.isDriver && (
             <div>
               <label htmlFor="carPlate">Car Plate</label>
               <input
@@ -143,7 +160,7 @@ function App() {
                 type="text"
                 className="input-car-plate"
                 onChange={handleChangeForm}
-                value={signupForm.carPlate}
+                value={signupForm.form.carPlate}
                 placeholder="Car Plate"
               />
             </div>
@@ -151,30 +168,32 @@ function App() {
         </>
       )}
       <br />
-      {signupForm.step === 3 && (
+      {isSubmitButtonVisible && (
         <>
-          <div className="name">Name: {signupForm.name}</div>
-          <div className="email">Email: {signupForm.email}</div>
-          <div className="cpf">CPF: {signupForm.cpf}</div>
-          {signupForm.isDriver && (
-            <div className="car-plate">Car plate: {signupForm.carPlate}</div>
+          <div className="name">Name: {signupForm.form.name}</div>
+          <div className="email">Email: {signupForm.form.email}</div>
+          <div className="cpf">CPF: {signupForm.form.cpf}</div>
+          {signupForm.form.isDriver && (
+            <div className="car-plate">
+              Car plate: {signupForm.form.carPlate}
+            </div>
           )}
           <button className="submit" onClick={handleSubmit}>
             Submit
           </button>
         </>
       )}
-      {signupForm.step === 4 && !!accountId.length && (
+      {signupForm.form.step === 4 && !!accountId.length && (
         <>
           <div className="account-id">{accountId}</div>
         </>
       )}
-      {signupForm.step > 1 && signupForm.step < 4 && (
+      {isPreviousButtonVisible && (
         <button className="previous-button" onClick={previousStep}>
           Previous
         </button>
       )}
-      {signupForm.step < 3 && (
+      {isNextButtonVisible && (
         <button className="next-button" onClick={nextStep}>
           Next
         </button>
