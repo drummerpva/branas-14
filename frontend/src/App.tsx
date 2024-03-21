@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { AccountGateway } from './infra/gateway/AccountGateway'
+import { AccountGateway, Input } from './infra/gateway/AccountGateway'
 
 type AppProps = {
   accountGateway: AccountGateway
@@ -71,7 +71,7 @@ function App({ accountGateway }: AppProps) {
   }, [])
 
   const handleSubmit = useCallback(async () => {
-    const input = signupForm
+    const input: Input = signupForm.form
     const output = await accountGateway.signup(input)
     setAccountId(output.accountId)
     nextStep()
